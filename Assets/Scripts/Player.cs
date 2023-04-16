@@ -8,13 +8,17 @@ namespace mbs
     public class Player : MonoBehaviour
     {
         // The player's rigidbody.
-        public Rigidbody physicsBody;
+        // Freeze the y-position. The y-position is manually set by the user.
+        public Rigidbody rigidBody;
 
-        // The rigidbody of the model.
-        public Rigidbody modelBody;
+        // The camera following the player. This is used to determine how the player's inputs are processed.
+        public FollowerCamera playerCamera;
 
         // The player's speed.
         private float speed = 1.0F;
+
+        // The player's jump power.
+        private float jumpPower = 1.0F;
 
         // The up vector of the player
         private Vector3 playerUp = Vector3.up;
@@ -23,19 +27,15 @@ namespace mbs
         void Start()
         {
             // Checks if the rigidbody exists.
-            if(physicsBody == null)
+            if(rigidBody == null)
             {
                 // Tries to get the rigidbody.
-                if(!TryGetComponent(out physicsBody))
+                if(!TryGetComponent(out rigidBody))
                 {
                     // Add the rigidbody.
-                    physicsBody = gameObject.AddComponent<Rigidbody>();
+                    rigidBody = gameObject.AddComponent<Rigidbody>();
                 }
             }
-
-            // Tries to get the model body - make sure all position components are frozen.
-            if(modelBody == null)
-                modelBody = GetComponentInChildren<Rigidbody>();
 
         }
 
@@ -63,6 +63,7 @@ namespace mbs
             // The horizontal and vertical.
             float hori = Input.GetAxisRaw("Horizontal");
             float vert = Input.GetAxisRaw("Vertical");
+            float jump = Input.GetAxisRaw("Jump");
 
             // NOTE: you need to account for applying force when on slopes. Maybe have a box that's used to...
             // Define how the forces are applied, and have a sphere on the inside that actually rotates...
@@ -71,13 +72,24 @@ namespace mbs
             // Left/Right
             if (hori != 0.0F)
             {
-                physicsBody.AddForce(playerUp * speed * hori, ForceMode.Impulse);
+                Vector3 direc = (playerCamera != null) ? playerCamera.transform.right : transform.right;
+                rigidBody.AddForce(direc * speed * hori, ForceMode.Impulse);
             }
 
             // Forward/Back
             if (vert != 0.0F)
             {
-                physicsBody.AddForce(playerUp * speed * vert, ForceMode.Impulse);
+                Vector3 direc = (playerCamera != null) ? playerCamera.transform.forward : transform.forward;
+                rigidBody.AddForce(direc * speed * vert, ForceMode.Impulse);
+            }
+
+
+            // Jump
+            if(jump != 0.0F)
+            {
+                // TODO: make it so that the player cannot jump in the air.
+                Vector3 direc = (playerCamera != null) ? playerCamera.transform.up : transform.up;
+                rigidBody.AddForce(direc * jumpPower * jump, ForceMode.Impulse);
             }
         }
 
