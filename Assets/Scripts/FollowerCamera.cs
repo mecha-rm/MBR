@@ -19,6 +19,11 @@ namespace mbs
         // Automatically calculates the positon offset of the target.
         public bool autoSetPosOffset = true;
 
+        // Checks what axes should be followed.
+        public bool followX = true;
+        public bool followY = true;
+        public bool followZ = true;
+
         // Start is called before the first frame update
         void Start()
         {
@@ -36,7 +41,16 @@ namespace mbs
         // Offset's the camera's position from the target.
         public void OffsetPositionFromTarget()
         {
-            transform.position = target.transform.position + posOffset;
+            // The new position.
+            Vector3 newPos;
+
+            // Checks if the position should be changed or not.
+            newPos.x = followX ? target.transform.position.x + posOffset.x : transform.position.x;
+            newPos.y = followY ? target.transform.position.y + posOffset.y : transform.position.y;
+            newPos.z = followZ ? target.transform.position.z + posOffset.z : transform.position.z;
+
+            // transform.position = target.transform.position + posOffset; // Original
+            transform.position = newPos;
         }
 
         // Update is called once per frame

@@ -12,21 +12,25 @@ namespace mbs
         public Rigidbody rigidBody;
 
         // The camera following the player. This is used to determine how the player's inputs are processed.
-        public FollowerCamera playerCamera;
+        public FollowerCamera followerCamera;
 
         // The player's movement speed.
-        private float moveSpeed = 20.0F;
+        private float moveSpeed = 20.0F; // TODO: make public when finished.
 
         // The player's rotation incrementer (in degrees).
-        private float rotationInc = 60.0F;
+        private float rotationInc = 60.0F; // TODO: make public when finished.
 
         // The player's move speed when they rotate.
-        private float rotMoveSpeed = 8.0F;
+        private float rotMoveSpeed = 8.0F; // TODO: make public when finished.
 
         // The player's jump power.
-        private float jumpPower = 1.0F;
+        private float jumpPower = 5.0F; // TODO: make public when finished.
 
+        // If the player can jump.
+        private bool canJump = true;
 
+        // Position when the player jumped.
+        private Vector3 posOnJump = Vector3.zero;
 
         // // The up vector of the player (TODO: address)
         // private Vector3 playerUp = Vector3.up;
@@ -55,7 +59,12 @@ namespace mbs
             // // Gets the up direction of the collision.
             // playerUp = collision.transform.up;
 
-            
+            // If it's a ground object. (TODO: check contact point so that the player is standing on the platform).
+            if (collision.gameObject.tag == "Ground")
+            {
+                canJump = true;
+                EnableCameraTrackPlayerY();
+            }
         }
 
         // OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider.
@@ -63,6 +72,10 @@ namespace mbs
         {
             // // Note: you probably need to figure out a better way to do this.
             // playerUp = Vector3.up;
+
+            // If it's a ground object. (TODO: check contact point so that the player is standing on the platform).
+            if (collision.gameObject.tag == "Ground")
+                canJump = false;
         }
 
         // Updates the player's inputs.
@@ -84,17 +97,17 @@ namespace mbs
                 float rotAngle = rotationInc * hori * Time.deltaTime;
                 
                 // Gets the camera's old parent, and sets its parent as being the current object.
-                Transform oldCamParent = playerCamera.transform.parent;
-                playerCamera.transform.parent = transform;
+                Transform oldCamParent = followerCamera.transform.parent;
+                followerCamera.transform.parent = transform;
 
                 // Rotates the player.
                 transform.Rotate(Vector3.up, rotAngle);
 
                 // Sets the camera back to normal.
-                playerCamera.transform.parent = oldCamParent;
+                followerCamera.transform.parent = oldCamParent;
 
                 // Calculates the new offset.
-                playerCamera.posOffset = GameplayManager.RotateY(playerCamera.posOffset, rotAngle, true); // Rotation version.
+                followerCamera.posOffset = GameplayManager.RotateY(followerCamera.posOffset, rotAngle, true); // Rotation version.
                 
                 
                 // Offset based on new positions - not using it since the camera pos may be different from its offset.
@@ -106,31 +119,60 @@ namespace mbs
                 // Vector3 direc = (playerCamera != null) ? playerCamera.transform.right : transform.right; // Original
                 // rigidBody.AddForce(direc * moveSpeed * hori, ForceMode.Impulse); // Original
 
-                Vector3 direc = (playerCamera != null) ? playerCamera.transform.forward: transform.forward; // New
+                Vector3 direc = (followerCamera != null) ? followerCamera.transform.forward: transform.forward; // New
                 rigidBody.AddForce(direc * rotMoveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // New
             }
 
             // Forward/Back
             if (vert != 0.0F)
             {
-                Vector3 direc = (playerCamera != null) ? playerCamera.transform.forward : transform.forward;
+                Vector3 direc = (followerCamera != null) ? followerCamera.transform.forward : transform.forward;
                 rigidBody.AddForce(direc * moveSpeed * vert * Time.deltaTime, ForceMode.Impulse);
             }
 
 
             // Jump
-            if(jump != 0.0F)
+            if(canJump) // Player can jump.
             {
-                // TODO: make it so that the player cannot jump in the air.
-                Vector3 direc = (playerCamera != null) ? playerCamera.transform.up : transform.up;
-                rigidBody.AddForce(direc * jumpPower * jump, ForceMode.Impulse);
+                // If the player should jump.
+                if (jump != 0.0F)
+                {
+                    // Saves the player's position when they jumped.
+                    posOnJump = transform.position;
+
+                    // Apply jump.
+                    Vector3 direc = (followerCamera != null) ? followerCamera.transform.up : transform.up;
+                    rigidBody.AddForce(direc * jumpPower * jump, ForceMode.Impulse);
+
+                    // The player cannot jump, and their y-position shouldn't be followed.
+                    canJump = false;
+                    
+                    // Don't follow the player.
+                    followerCamera.followY = false;
+
+                }
             }
+
+
+            // If the player's y-position is currently not being followed.
+            if(!followerCamera.followY)
+            {
+                // If the player is descending again, start following their y-position once more.
+                if ((transform.position - posOnJump).y < 0)
+                    followerCamera.followY = true;
+            }
+        }
+
+        // Call to have the camera track the player's y-position again.
+        public void EnableCameraTrackPlayerY()
+        {
+            followerCamera.followY = true;
         }
 
         // Update is called once per frame
         void Update()
         {
-            UpdateInput();   
+            UpdateInput();
         }
     }
 }

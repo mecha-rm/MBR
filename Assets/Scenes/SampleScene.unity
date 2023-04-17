@@ -215,6 +215,9 @@ MonoBehaviour:
   target: {fileID: 2082171572}
   posOffset: {x: 0, y: 0, z: 0}
   autoSetPosOffset: 1
+  followX: 1
+  followY: 1
+  followZ: 1
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -504,7 +507,7 @@ GameObject:
   - component: {fileID: 1401850522}
   m_Layer: 0
   m_Name: Floor
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -735,7 +738,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigidBody: {fileID: 2082171574}
-  playerCamera: {fileID: 516943263}
+  followerCamera: {fileID: 516943263}
 --- !u!54 &2082171574
 Rigidbody:
   m_ObjectHideFlags: 0
