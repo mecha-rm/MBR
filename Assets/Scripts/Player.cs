@@ -14,14 +14,22 @@ namespace mbs
         // The camera following the player. This is used to determine how the player's inputs are processed.
         public FollowerCamera playerCamera;
 
-        // The player's speed.
-        private float speed = 1.0F;
+        // The player's movement speed.
+        private float moveSpeed = 20.0F;
+
+        // The player's rotation incrementer (in degrees).
+        private float rotationInc = 60.0F;
+
+        // The player's move speed when they rotate.
+        private float rotMoveSpeed = 8.0F;
 
         // The player's jump power.
         private float jumpPower = 1.0F;
 
-        // The up vector of the player
-        private Vector3 playerUp = Vector3.up;
+
+
+        // // The up vector of the player (TODO: address)
+        // private Vector3 playerUp = Vector3.up;
 
         // Start is called before the first frame update
         void Start()
@@ -44,8 +52,8 @@ namespace mbs
         {
             // TODO: check tag to see if object should effect player's movement direction.
 
-            // Gets the up direction of the collision.
-            playerUp = collision.transform.up;
+            // // Gets the up direction of the collision.
+            // playerUp = collision.transform.up;
 
             
         }
@@ -53,8 +61,8 @@ namespace mbs
         // OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider.
         private void OnCollisionExit(Collision collision)
         {
-            // Note: you probably need to figure out a better way to do this.
-            playerUp = Vector3.up;
+            // // Note: you probably need to figure out a better way to do this.
+            // playerUp = Vector3.up;
         }
 
         // Updates the player's inputs.
@@ -72,15 +80,41 @@ namespace mbs
             // Left/Right
             if (hori != 0.0F)
             {
-                Vector3 direc = (playerCamera != null) ? playerCamera.transform.right : transform.right;
-                rigidBody.AddForce(direc * speed * hori, ForceMode.Impulse);
+                // Rotation
+                float rotAngle = rotationInc * hori * Time.deltaTime;
+                
+                // Gets the camera's old parent, and sets its parent as being the current object.
+                Transform oldCamParent = playerCamera.transform.parent;
+                playerCamera.transform.parent = transform;
+
+                // Rotates the player.
+                transform.Rotate(Vector3.up, rotAngle);
+
+                // Sets the camera back to normal.
+                playerCamera.transform.parent = oldCamParent;
+
+                // Calculates the new offset.
+                playerCamera.posOffset = GameplayManager.RotateY(playerCamera.posOffset, rotAngle, true); // Rotation version.
+                
+                
+                // Offset based on new positions - not using it since the camera pos may be different from its offset.
+                // playerCamera.posOffset = playerCamera.transform.position - playerCamera.target.transform.position;
+
+                // playerCamera.transform.RotateAround(transform.position, Vector3.up, rotAngle);
+
+                // Movement
+                // Vector3 direc = (playerCamera != null) ? playerCamera.transform.right : transform.right; // Original
+                // rigidBody.AddForce(direc * moveSpeed * hori, ForceMode.Impulse); // Original
+
+                Vector3 direc = (playerCamera != null) ? playerCamera.transform.forward: transform.forward; // New
+                rigidBody.AddForce(direc * rotMoveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // New
             }
 
             // Forward/Back
             if (vert != 0.0F)
             {
                 Vector3 direc = (playerCamera != null) ? playerCamera.transform.forward : transform.forward;
-                rigidBody.AddForce(direc * speed * vert, ForceMode.Impulse);
+                rigidBody.AddForce(direc * moveSpeed * vert * Time.deltaTime, ForceMode.Impulse);
             }
 
 
