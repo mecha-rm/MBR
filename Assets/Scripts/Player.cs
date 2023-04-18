@@ -14,6 +14,12 @@ namespace mbs
         // The camera following the player. This is used to determine how the player's inputs are processed.
         public FollowerCamera followerCamera;
 
+        // The parent of the follower camera.
+        private Transform followerCameraParent = null;
+
+        // The rail rider script.
+        public RailRider railRider;
+
         // The player's movement speed.
         private float moveSpeed = 20.0F; // TODO: make public when finished.
 
@@ -49,7 +55,29 @@ namespace mbs
                 }
             }
 
+            // Grabs the rail rider.
+            if (railRider == null)
+                railRider = gameObject.GetComponent<RailRider>();
+
+
+            // Rail rider is set.
+            if(railRider != null)
+            {
+                railRider.OnAttachToRailAddCallback(OnAttachToRail);
+                railRider.OnDetachFromRailAddCallback(OnDetachFromRail);
+                railRider.OnPositionUpdatedAddCallback(OnRailPositionUpdated);
+            }
         }
+
+        //// OnCollisionEnter is called when a collider/rigidbody has begun touching another collider/rigidbody.
+        //private void OnCollisionEnter(Collision collision)
+        //{
+        //    // If it's a rail object.
+        //    if (collision.gameObject.tag == Rail.RAIL_TAG)
+        //    {
+        //        OnAttachToRail();
+        //    }
+        //}
 
         // OnCollisionStay is called once per frame for every collider/rigidbody that is touching this rigidbody/collider.
         private void OnCollisionStay(Collision collision)
@@ -60,7 +88,7 @@ namespace mbs
             // playerUp = collision.transform.up;
 
             // If it's a ground object. (TODO: check contact point so that the player is standing on the platform).
-            if (collision.gameObject.tag == "Ground")
+            if (collision.gameObject.tag == GameplayManager.GROUND_TAG)
             {
                 canJump = true;
                 EnableCameraTrackPlayerY();
@@ -74,8 +102,57 @@ namespace mbs
             // playerUp = Vector3.up;
 
             // If it's a ground object. (TODO: check contact point so that the player is standing on the platform).
-            if (collision.gameObject.tag == "Ground")
+            if (collision.gameObject.tag == GameplayManager.GROUND_TAG)
+            {
                 canJump = false;
+            }
+            //else if(collision.gameObject.tag == Rail.RAIL_TAG) // Rail
+            //{
+            //    OnDetachFromRail();
+            //}
+                
+        }
+
+        // OnTriggerEnter is called when the Collider other enters the trigger.
+        private void OnTriggerEnter(Collider collision)
+        {
+            //// If it's a rail object.
+            //if (collision.gameObject.tag == Rail.RAIL_TAG)
+            //{
+            //    OnAttachToRail();
+            //}
+        }
+
+        // OnTriggerExit is called when the Collider other has stopped touching the trigger.
+        private void OnTriggerExit(Collider other)
+        {
+            //// If it's a rail object.
+            //if (other.gameObject.tag == Rail.RAIL_TAG)
+            //{
+            //    OnDetachFromRail();
+            //}
+        }
+
+        // Called when attaching to a rail.
+        private void OnAttachToRail(Rail rail, RailRider rider)
+        {
+            canJump = true;
+            EnableCameraTrackPlayerY();
+
+            followerCameraParent = followerCamera.transform.parent;
+            followerCamera.transform.parent = transform;
+        }
+
+        // Called when detaching from a rail.
+        private void OnDetachFromRail(Rail rail, RailRider rider)
+        {
+            followerCamera.transform.parent = followerCameraParent;
+        }
+
+        // Called when changing positions on a rail.
+        private void OnRailPositionUpdated(Vector3 oldPos, Vector3 newPos)
+        {
+            // ...
         }
 
         // Updates the player's inputs.
@@ -97,14 +174,14 @@ namespace mbs
                 float rotAngle = rotationInc * hori * Time.deltaTime;
                 
                 // Gets the camera's old parent, and sets its parent as being the current object.
-                Transform oldCamParent = followerCamera.transform.parent;
+                followerCameraParent = followerCamera.transform.parent;
                 followerCamera.transform.parent = transform;
 
                 // Rotates the player.
                 transform.Rotate(Vector3.up, rotAngle);
 
                 // Sets the camera back to normal.
-                followerCamera.transform.parent = oldCamParent;
+                followerCamera.transform.parent = followerCameraParent;
 
                 // Calculates the new offset.
                 followerCamera.posOffset = GameplayManager.RotateY(followerCamera.posOffset, rotAngle, true); // Rotation version.
@@ -173,6 +250,14 @@ namespace mbs
         void Update()
         {
             UpdateInput();
+        }
+
+        // This function is called when the MonoBehaviour will be destroyed.
+        private void OnDestroy()
+        {
+            railRider.OnAttachToRailRemoveCallback(OnAttachToRail);
+            railRider.OnDetachFromRailRemoveCallback(OnDetachFromRail);
+            railRider.OnPositionUpdatedRemoveCallback(OnRailPositionUpdated);
         }
     }
 }

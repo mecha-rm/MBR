@@ -8,6 +8,9 @@ namespace mbs
     // The manager for gameplay operations.
     public class GameplayManager : MonoBehaviour
     {
+        // The ground tag.
+        public static string GROUND_TAG = "Ground";
+
         // Start is called before the first frame update
         void Start()
         {

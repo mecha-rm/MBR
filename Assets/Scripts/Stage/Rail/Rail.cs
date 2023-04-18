@@ -10,6 +10,9 @@ namespace mbs
     // A rail that's used to transport the player.
     public class Rail : MonoBehaviour
     {
+        // The tag for rails.
+        public static string RAIL_TAG = "Rail";
+
         // The speed of the rail.
         public float speed = 1.0F;
 
@@ -31,29 +34,46 @@ namespace mbs
         // OnCollisionEnter is called when a collider/rigidbody has begun touching another collider/rigidbody.
         private void OnCollisionEnter(Collision collision)
         {
-            // The rider component.
-            RailRider rider;
-
-            // Tries to grab the rider component.
-            if(collision.gameObject.TryGetComponent(out rider))
-            {
-                AttachToRail(rider);
-            }
+            TryAttachToRail(collision.gameObject);
         }
 
-        // OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider
-        private void OnCollisionStay(Collision collision)
+        // OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider.
+        private void OnCollisionExit(Collision collision)
+        {
+            TryDetachFromRail(collision.gameObject);
+        }
+
+        // OnTriggerEnter is called when the Collider other enters the trigger.
+        private void OnTriggerEnter(Collider collision)
+        {
+            TryAttachToRail(collision.gameObject);
+        }
+
+        // OnTriggerExit is called when the Collider other has stopped touching the trigger.
+        private void OnTriggerExit(Collider collision)
+        {
+            TryDetachFromRail(collision.gameObject);
+        }
+
+
+
+        // Attemps to attach the game object to the rail (only works if game object has RailRider script attached).
+        public bool TryAttachToRail(GameObject entity)
         {
             // The rider component.
             RailRider rider;
 
             // Tries to grab the rider component.
-            if (collision.gameObject.TryGetComponent(out rider))
+            if (entity.gameObject.TryGetComponent(out rider))
             {
-                // If the rider is in the list, detach them from the rail.
-                if(riders.Contains(rider))
-                    DetachFromRail(rider);
+                // If the rider isn't in the list, try to attach it.
+                if(!riders.Contains(rider))
+                    AttachToRail(rider);
             }
+
+            // Checks if in list.
+            bool added = riders.Contains(rider);
+            return added;
         }
 
 
@@ -88,7 +108,7 @@ namespace mbs
             int closestIndex = points.IndexOf(closestPoint);
 
             // Checks the cloest index.
-            if (closestIndex > 0) // Start of the rail.
+            if (closestIndex >= 0 && closestIndex < points.Count - 1) // Start of the rail.
             {
                 rider.startPoint = closestPoint;
                 rider.endPoint = points[closestIndex + 1];
@@ -177,8 +197,33 @@ namespace mbs
             rider.railT = Mathf.Clamp01(rider.railT);
 
             // Add to attached objects.
-            riders.Add(rider);
+            if(!riders.Contains(rider))
+                riders.Add(rider);
+            
             rider.rail = this;
+            rider.transform.rotation = Quaternion.identity;
+
+            // On attach to the rail.
+            rider.OnAttachToRail(this);
+        }
+
+        // Tries to detach from the rail.
+        public bool TryDetachFromRail(GameObject entity)
+        {
+            // The rider component.
+            RailRider rider;
+
+            // Tries to grab the rider component.
+            if (entity.TryGetComponent(out rider))
+            {
+                // If the rider is in the list, detach them from the rail.
+                if (riders.Contains(rider))
+                    DetachFromRail(rider);
+            }
+
+            // Checks to see that rider was removed.
+            bool removed = !riders.Contains(rider);
+            return removed;
         }
 
         // Detaches the provided rider from the rail.
@@ -190,12 +235,29 @@ namespace mbs
                 riders.Remove(rider);
 
             // Clear out the values.
+            // Clear out the rail.
+            if(rider.rail != this && rider.rail != null)
+            {
+                // Remove the rider from its rail.
+                if(rider.rail.riders.Contains(rider))
+                    rider.rail.riders.Remove(rider);
+            }
+
+            // Clear rail.
             rider.rail = null;
+
+            // TODO: mak sure the endpoint matches with where the entity detached from the rail.
+            Vector3 endPointUp = rider.endPoint.transform.up;
+
+            // Clear out start and end point.
             rider.startPoint = null;
             rider.endPoint = null;
 
             // The rail t-value is now 0.
             rider.railT = 0.0F;
+
+            // Makes sure that the rider has the same up as their endpoint.
+            rider.transform.up = endPointUp;
 
             // TODO: maybe keep it attached to the rail, but don't have it move.
 
@@ -206,6 +268,9 @@ namespace mbs
                 Vector3 force = (rider.transform.position - oldPos) * Vector3.Distance(rider.transform.position, oldPos);
                 rider.rigidbody.AddForce(force, ForceMode.Impulse);
             }
+
+            // On detach from the rail.
+            rider.OnDetachFromRail(this);
         }
 
         // Detaches the rider from the rail (does not push off).
@@ -221,12 +286,19 @@ namespace mbs
             // TODO: make sure the user goes the same speed across the whole rail.
 
             // IF the rail has points to travel along.
-            if(points.Count > 1)
+            if(points.Count > 1 && riders.Count > 0)
             {
                 // Goes through all riders.
-                foreach (RailRider rider in riders)
+                for(int i = riders.Count - 1; i >= 0; i--)
                 {
+                    // Get the rider.
+                    RailRider rider = riders[i];
+
                     // TODO: perform catmull-rom calculation
+
+                    // Attach to the rail again if no start point or end point are set.
+                    if (rider.startPoint == null || rider.endPoint == null)
+                        AttachToRail(rider);
 
                     // Increase t, and clamp it.
                     rider.railT += Time.deltaTime * speed * rider.speed;
@@ -241,6 +313,12 @@ namespace mbs
                             rider.startPoint.transform.position,
                             rider.endPoint.transform.position,
                             rider.railT);
+
+
+                    // Face direction of movement.
+                    rider.transform.forward = (rider.transform.position - riderOldPos).normalized;
+
+                    // TODO: fgure out the up-direction from the rail.
 
                     // Zeroes out the rider's velocity.
                     if (rider.rigidbody != null)
@@ -287,7 +365,7 @@ namespace mbs
                     }
 
                     // The position has been updated.
-                    rider.OnPositionUpdated();
+                    rider.OnPositionUpdated(riderOldPos, rider.transform.position);
                 }
             }
             
