@@ -7,6 +7,9 @@ namespace mbs
     // The script for the player.
     public class Player : MonoBehaviour
     {
+        // The player tag.
+        public static string PLAYER_TAG = "Player";
+
         // The player's rigidbody.
         // Freeze the y-position. The y-position is manually set by the user.
         public Rigidbody rigidBody;
@@ -83,7 +86,7 @@ namespace mbs
             if (collision.gameObject.tag == GameplayManager.GROUND_TAG)
             {
                 canJump = true;
-                EnableCameraTrackPlayerY();
+                SetCameraTrackPlayerY(true);
             }
         }
 
@@ -145,7 +148,7 @@ namespace mbs
         private void OnAttachToRail(Rail rail, RailRider rider)
         {
             canJump = true;
-            EnableCameraTrackPlayerY();
+            SetCameraTrackPlayerY(true);
 
             followerCameraParent = followerCamera.transform.parent;
             followerCamera.transform.parent = transform;
@@ -169,7 +172,10 @@ namespace mbs
             // The horizontal and vertical.
             float hori = Input.GetAxisRaw("Horizontal");
             float vert = Input.GetAxisRaw("Vertical");
-            float jump = Input.GetAxisRaw("Jump");
+
+            // Need to set it up this way for GetKeyDown for jumping.
+            // float jump = Input.GetAxisRaw("Jump"); // Old
+            float jump = Input.GetKeyDown(KeyCode.Space) ? 1.0F : 0.0F; // New
 
             // NOTE: you need to account for applying force when on slopes. Maybe have a box that's used to...
             // Define how the forces are applied, and have a sphere on the inside that actually rotates...
@@ -218,13 +224,18 @@ namespace mbs
 
 
             // Jump
-            if(canJump) // Player can jump.
+            // if (canJump && Input.GetKeyDown(KeyCode.Space))
+            if (canJump && Input.GetKeyDown(KeyCode.Space)) // Player can jump.
             {
                 // If the player should jump.
                 if (jump != 0.0F)
                 {
-                    // Saves the player's position when they jumped.
-                    posOnJump = transform.position;
+                    // Detaches the rider from the rail if it's attached to it.
+                    if (railRider.IsRiderAttachedToRail())
+                        railRider.DetachFromRail();
+
+                        // Saves the player's position when they jumped.
+                        posOnJump = transform.position;
 
                     // Apply jump.
                     // Vector3 direc = (followerCamera != null) ? followerCamera.transform.up : transform.up; // Original
@@ -238,8 +249,7 @@ namespace mbs
                     canJump = false;
                     
                     // Don't follow the player.
-                    followerCamera.followY = false;
-
+                    SetCameraTrackPlayerY(false);
                 }
             }
 
@@ -251,16 +261,16 @@ namespace mbs
                 // It also only happens if the rigidbody's velocity is negative or 0 (TODO: may not check velocity).
                 if ((transform.position - posOnJump).y < 0 && rigidBody.velocity.y < 0)
                 {
-                    EnableCameraTrackPlayerY();
+                    SetCameraTrackPlayerY(true);
                 }
                     
             }
         }
 
         // Call to have the camera track the player's y-position again.
-        public void EnableCameraTrackPlayerY()
+        public void SetCameraTrackPlayerY(bool value)
         {
-            followerCamera.followY = true;
+            followerCamera.followY = value;
         }
 
         // Update is called once per frame

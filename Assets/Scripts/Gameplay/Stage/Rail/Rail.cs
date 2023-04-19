@@ -269,11 +269,11 @@ namespace mbs
 
             // TODO: maybe keep it attached to the rail, but don't have it move.
 
-            // If the rider doesn't have a rigidbody
+            // If the rider doesn't have a rigidbody (TODO: this doesn't appear to work at adding force).
             if(rider.rigidbody != null)
             {
                 // Calculates the force after being pushed off.
-                Vector3 force = (rider.transform.position - oldPos) * Vector3.Distance(rider.transform.position, oldPos);
+                Vector3 force = (rider.transform.position - oldPos) * Vector3.Distance(rider.transform.position, oldPos) * 100.0F;
                 rider.rigidbody.AddForce(force, ForceMode.Impulse);
             }
 
@@ -285,6 +285,13 @@ namespace mbs
         private void DetachFromRail(RailRider rider)
         {
             DetachFromRail(rider, rider.transform.position);
+        }
+
+        // Checks if the rider is attached to the rail.
+        public bool IsRiderAttached(RailRider rider)
+        {
+            bool result = riders.Contains(rider);
+            return result;
         }
 
         // Update is called once per frame

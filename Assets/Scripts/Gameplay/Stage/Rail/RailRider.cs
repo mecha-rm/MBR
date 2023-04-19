@@ -69,6 +69,18 @@ namespace mbs
                 attachedCallback(rail, this);
         }
 
+        // Attach to the rail.
+        public bool AttachToRail()
+        {
+            bool result = false;
+
+            // Tries to attach to the rail.
+            if (rail != null)
+                result = rail.TryAttachToRail(gameObject);
+
+            return result;
+        }
+
         // Adds a callback for when the rail rider is detached from the rail.
         public void OnDetachFromRailAddCallback(RailRiderCallback callback)
         {
@@ -88,6 +100,34 @@ namespace mbs
 
             if (detachedCallback != null)
                 detachedCallback(rail, this);
+        }
+
+        // Detach from the rail.
+        public bool DetachFromRail()
+        {
+            bool result = false;
+
+            // Tries to detach from the rail.
+            if (rail != null)
+                result = rail.TryDetachFromRail(gameObject);
+
+            return result;
+        }
+
+        // Checks if a rider is attached to their set rail.
+        public bool IsRiderAttachedToRail()
+        {
+            // Checks if the rail is set.
+            if(rail == null)
+            {
+                return false;
+            }
+            else
+            {
+                // Check if connected.
+                bool result = rail.IsRiderAttached(this);
+                return result;
+            }
         }
 
         // Adds a callback for when the rail rider positon is updated.

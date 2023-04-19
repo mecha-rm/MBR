@@ -18,6 +18,9 @@ namespace mbs
         // The player for the game.
         public Player player;
 
+        // The finish area of the game.
+        public Finish finish;
+
         // Constructor
         private GameplayManager()
         {
@@ -40,6 +43,10 @@ namespace mbs
             // Finds the player.
             if (player == null)
                 player = FindObjectOfType<Player>();
+
+            // Finds the finish.
+            if (finish == null)
+                finish = FindObjectOfType<Finish>();
         }
 
         // Returns the instance of the gameplay manager.
@@ -180,6 +187,12 @@ namespace mbs
             return Rotate(v, angle, 'Z', inDegrees);
         }
 
+        
+        // Called when the player has finished the course.
+        public void OnFinish()
+        {
+
+        }
 
         // Update is called once per frame
         void Update()
