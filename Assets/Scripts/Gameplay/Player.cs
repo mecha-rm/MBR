@@ -20,6 +20,9 @@ namespace mbs
         // The parent of the follower camera.
         private Transform followerCameraParent = null;
 
+        // If set to 'true', the camera is rotated when the player rotates their body.
+        public bool rotateCameraWithPlayer = true;
+
         // The rail rider script.
         public RailRider railRider;
 
@@ -33,7 +36,7 @@ namespace mbs
         private float rotMoveSpeed = 8.0F; // TODO: make public when finished.
 
         // The player's jump power.
-        private float jumpPower = 10.0F; // TODO: make public when finished.
+        public float jumpPower = 10.0F; // TODO: make public when finished.
 
         // If the player can jump.
         private bool canJump = true;
@@ -150,14 +153,22 @@ namespace mbs
             canJump = true;
             SetCameraTrackPlayerY(true);
 
-            followerCameraParent = followerCamera.transform.parent;
-            followerCamera.transform.parent = transform;
+            // If the camera should rotate along with the player.
+            if(rotateCameraWithPlayer)
+            {
+                followerCameraParent = followerCamera.transform.parent;
+                followerCamera.transform.parent = transform;
+            }
         }
 
         // Called when detaching from a rail.
         private void OnDetachFromRail(Rail rail, RailRider rider)
         {
-            followerCamera.transform.parent = followerCameraParent;
+            // If the camera should roate with the player.
+            if(rotateCameraWithPlayer)
+            {
+                followerCamera.transform.parent = followerCameraParent;
+            }
         }
 
         // Called when changing positions on a rail.
@@ -188,23 +199,31 @@ namespace mbs
                 float rotAngle = rotationInc * hori * Time.deltaTime;
                 
                 // Gets the camera's old parent, and sets its parent as being the current object.
-                followerCameraParent = followerCamera.transform.parent;
-                followerCamera.transform.parent = transform;
+                if(rotateCameraWithPlayer)
+                {
+                    followerCameraParent = followerCamera.transform.parent;
+                    followerCamera.transform.parent = transform;
+                }
 
                 // Rotates the player.
                 transform.Rotate(Vector3.up, rotAngle);
 
-                // Sets the camera back to normal.
-                followerCamera.transform.parent = followerCameraParent;
+                // Rotates the camera with the player.
+                if(rotateCameraWithPlayer)
+                {
+                    // Sets the camera back to normal.
+                    followerCamera.transform.parent = followerCameraParent;
 
-                // Calculates the new offset.
-                followerCamera.posOffset = GameplayManager.RotateY(followerCamera.posOffset, rotAngle, true); // Rotation version.
-                
-                
-                // Offset based on new positions - not using it since the camera pos may be different from its offset.
-                // playerCamera.posOffset = playerCamera.transform.position - playerCamera.target.transform.position;
+                    // Calculates the new offset.
+                    followerCamera.posOffset = GameplayManager.RotateY(followerCamera.posOffset, rotAngle, true); // Rotation version.
 
-                // playerCamera.transform.RotateAround(transform.position, Vector3.up, rotAngle);
+
+                    // Offset based on new positions - not using it since the camera pos may be different from its offset.
+                    // playerCamera.posOffset = playerCamera.transform.position - playerCamera.target.transform.position;
+
+                    // playerCamera.transform.RotateAround(transform.position, Vector3.up, rotAngle);
+                }
+
 
                 // Movement
                 // Vector3 direc = (playerCamera != null) ? playerCamera.transform.right : transform.right; // Original

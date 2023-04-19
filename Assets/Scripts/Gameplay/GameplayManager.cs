@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 namespace mbs
@@ -20,6 +21,14 @@ namespace mbs
 
         // The finish area of the game.
         public Finish finish;
+
+        [Header("Timer")]
+
+        // The timer for the game. This tracks how long the player has been going through the level for.
+        public float timer = 0.0F;
+
+        // Checks if the timer is paused or not.
+        public bool pausedTimer = false;
 
         // Constructor
         private GameplayManager()
@@ -197,7 +206,11 @@ namespace mbs
         // Update is called once per frame
         void Update()
         {
-
+            // Increases the timer.
+            if(!pausedTimer)
+            {
+                timer += Time.deltaTime;
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace mbs
 {
@@ -16,7 +17,8 @@ namespace mbs
         // Update is called once per frame
         void Update()
         {
-            // TODO: transfer to next scene on first update.
+            // Go to the title scene.
+            SceneManager.LoadScene("TitleScene");
         }
     }
 }

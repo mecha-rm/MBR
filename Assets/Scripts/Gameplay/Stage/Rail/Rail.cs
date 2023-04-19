@@ -272,8 +272,8 @@ namespace mbs
             // If the rider doesn't have a rigidbody (TODO: this doesn't appear to work at adding force).
             if(rider.rigidbody != null)
             {
-                // Calculates the force after being pushed off.
-                Vector3 force = (rider.transform.position - oldPos) * Vector3.Distance(rider.transform.position, oldPos) * 100.0F;
+                // Calculates the force after being pushed off. TODO: the multiple is by 10, which may need to be changed.
+                Vector3 force = (rider.transform.position - oldPos) * Vector3.Distance(rider.transform.position, oldPos) * 10.0F;
                 rider.rigidbody.AddForce(force, ForceMode.Impulse);
             }
 
