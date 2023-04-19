@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace mbs
@@ -8,13 +9,54 @@ namespace mbs
     // The manager for gameplay operations.
     public class GameplayManager : MonoBehaviour
     {
+        // The instancce of the GameplayManager.
+        public static GameplayManager instance;
+
         // The ground tag.
         public static string GROUND_TAG = "Ground";
+
+        // The player for the game.
+        public Player player;
+
+        // Constructor
+        private GameplayManager()
+        {
+
+        }
+
+        // Awake is called when the script instance is loaded.
+        private void Awake()
+        {
+            // If the instance is not set.
+            if (instance == null)
+            {
+                instance = this;
+            }
+        }
 
         // Start is called before the first frame update
         void Start()
         {
+            // Finds the player.
+            if (player == null)
+                player = FindObjectOfType<Player>();
+        }
 
+        // Returns the instance of the gameplay manager.
+        public static GameplayManager Instance
+        {
+            get
+            {
+                // Instance does not exist.
+                if (instance == null)
+                {
+                    GameObject manager = new GameObject("Gameplay Manager (singleton)");
+                    instance = manager.AddComponent<GameplayManager>();
+                }
+
+                // Return instance.
+                return instance;
+            }
         }
 
         // Rotates the 2D vector (around its z-axis).

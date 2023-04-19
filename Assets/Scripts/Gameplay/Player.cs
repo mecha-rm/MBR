@@ -30,7 +30,7 @@ namespace mbs
         private float rotMoveSpeed = 8.0F; // TODO: make public when finished.
 
         // The player's jump power.
-        private float jumpPower = 5.0F; // TODO: make public when finished.
+        private float jumpPower = 10.0F; // TODO: make public when finished.
 
         // If the player can jump.
         private bool canJump = true;
@@ -69,31 +69,39 @@ namespace mbs
             }
         }
 
-        //// OnCollisionEnter is called when a collider/rigidbody has begun touching another collider/rigidbody.
-        //private void OnCollisionEnter(Collision collision)
-        //{
-        //    // If it's a rail object.
-        //    if (collision.gameObject.tag == Rail.RAIL_TAG)
-        //    {
-        //        OnAttachToRail();
-        //    }
-        //}
-
-        // OnCollisionStay is called once per frame for every collider/rigidbody that is touching this rigidbody/collider.
-        private void OnCollisionStay(Collision collision)
+        // OnCollisionEnter is called when a collider/rigidbody has begun touching another collider/rigidbody.
+        private void OnCollisionEnter(Collision collision)
         {
-            // TODO: check tag to see if object should effect player's movement direction.
-
-            // // Gets the up direction of the collision.
-            // playerUp = collision.transform.up;
+            // // If it's a rail object.
+            // if (collision.gameObject.tag == Rail.RAIL_TAG)
+            // {
+            //     OnAttachToRail();
+            // }
 
             // If it's a ground object. (TODO: check contact point so that the player is standing on the platform).
+            // This is used in 'Enter' so that it doesn't hinder the player's jump.
             if (collision.gameObject.tag == GameplayManager.GROUND_TAG)
             {
                 canJump = true;
                 EnableCameraTrackPlayerY();
             }
         }
+
+        // // OnCollisionStay is called once per frame for every collider/rigidbody that is touching this rigidbody/collider.
+        // private void OnCollisionStay(Collision collision)
+        // {
+        //     // TODO: check tag to see if object should effect player's movement direction.
+        // 
+        //     // // Gets the up direction of the collision.
+        //     // playerUp = collision.transform.up;
+        // 
+        //     // If it's a ground object. (TODO: check contact point so that the player is standing on the platform).
+        //     if (collision.gameObject.tag == GameplayManager.GROUND_TAG)
+        //     {
+        //         canJump = true;
+        //         EnableCameraTrackPlayerY();
+        //     }
+        // }
 
         // OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider.
         private void OnCollisionExit(Collision collision)
@@ -196,8 +204,9 @@ namespace mbs
                 // Vector3 direc = (playerCamera != null) ? playerCamera.transform.right : transform.right; // Original
                 // rigidBody.AddForce(direc * moveSpeed * hori, ForceMode.Impulse); // Original
 
-                Vector3 direc = (followerCamera != null) ? followerCamera.transform.forward: transform.forward; // New
-                rigidBody.AddForce(direc * rotMoveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // New
+                // Apply force in the direction.
+                // Vector3 direc = (followerCamera != null) ? followerCamera.transform.forward: transform.forward; // New
+                // rigidBody.AddForce(direc * rotMoveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // New
             }
 
             // Forward/Back
@@ -218,8 +227,12 @@ namespace mbs
                     posOnJump = transform.position;
 
                     // Apply jump.
-                    Vector3 direc = (followerCamera != null) ? followerCamera.transform.up : transform.up;
-                    rigidBody.AddForce(direc * jumpPower * jump, ForceMode.Impulse);
+                    // Vector3 direc = (followerCamera != null) ? followerCamera.transform.up : transform.up; // Original
+                    Vector3 direc = Vector3.up; // New
+
+                    // transform.Translate(direc.normalized);
+                    rigidBody.velocity = new Vector3(rigidBody.velocity.x, 0.0F, rigidBody.velocity.z);
+                    rigidBody.AddForce(direc.normalized * jumpPower * jump, ForceMode.Impulse); // Original
 
                     // The player cannot jump, and their y-position shouldn't be followed.
                     canJump = false;
@@ -235,8 +248,12 @@ namespace mbs
             if(!followerCamera.followY)
             {
                 // If the player is descending again, start following their y-position once more.
-                if ((transform.position - posOnJump).y < 0)
-                    followerCamera.followY = true;
+                // It also only happens if the rigidbody's velocity is negative or 0 (TODO: may not check velocity).
+                if ((transform.position - posOnJump).y < 0 && rigidBody.velocity.y < 0)
+                {
+                    EnableCameraTrackPlayerY();
+                }
+                    
             }
         }
 

@@ -67,7 +67,7 @@ namespace mbs
             if (entity.gameObject.TryGetComponent(out rider))
             {
                 // If the rider isn't in the list, try to attach it.
-                if(!riders.Contains(rider))
+                if(!riders.Contains(rider) || rider.rail != this)
                     AttachToRail(rider);
             }
 
@@ -79,6 +79,23 @@ namespace mbs
 
         // Attaches the provided entity to the rail.
         private void AttachToRail(RailRider rider)
+        {
+            // Calculates the start and end poitns for the rider.
+            CalculateStartAndEndPoints(rider);
+
+            // Add to attached objects.
+            if(!riders.Contains(rider))
+                riders.Add(rider);
+            
+            rider.rail = this;
+            rider.transform.rotation = Quaternion.identity;
+
+            // On attach to the rail.
+            rider.OnAttachToRail(this);
+        }
+
+        // Calculates the start and end points based on the position of the rider.
+        private void CalculateStartAndEndPoints(RailRider rider)
         {
             // Checks if ther there points to connect to.
             if (points.Count <= 1)
@@ -195,17 +212,8 @@ namespace mbs
 
             // Clamp the vlaue so that it's between (0, 1).
             rider.railT = Mathf.Clamp01(rider.railT);
-
-            // Add to attached objects.
-            if(!riders.Contains(rider))
-                riders.Add(rider);
-            
-            rider.rail = this;
-            rider.transform.rotation = Quaternion.identity;
-
-            // On attach to the rail.
-            rider.OnAttachToRail(this);
         }
+
 
         // Tries to detach from the rail.
         public bool TryDetachFromRail(GameObject entity)
@@ -217,7 +225,7 @@ namespace mbs
             if (entity.TryGetComponent(out rider))
             {
                 // If the rider is in the list, detach them from the rail.
-                if (riders.Contains(rider))
+                if (riders.Contains(rider) || rider.rail != null)
                     DetachFromRail(rider);
             }
 
@@ -298,7 +306,7 @@ namespace mbs
 
                     // Attach to the rail again if no start point or end point are set.
                     if (rider.startPoint == null || rider.endPoint == null)
-                        AttachToRail(rider);
+                        CalculateStartAndEndPoints(rider);
 
                     // Increase t, and clamp it.
                     rider.railT += Time.deltaTime * speed * rider.speed;
