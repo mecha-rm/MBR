@@ -158,6 +158,7 @@ namespace mbs
             {
                 followerCameraParent = followerCamera.transform.parent;
                 followerCamera.transform.parent = transform;
+                followerCamera.enabled = false; // Disable script so that the camera stays in a fixed position.
             }
         }
 
@@ -168,6 +169,7 @@ namespace mbs
             if(rotateCameraWithPlayer)
             {
                 followerCamera.transform.parent = followerCameraParent;
+                followerCamera.enabled = true; // Enable script so that the camera goes back to its proper position.
             }
         }
 
@@ -199,7 +201,7 @@ namespace mbs
                 float rotAngle = rotationInc * hori * Time.deltaTime;
                 
                 // Gets the camera's old parent, and sets its parent as being the current object.
-                if(rotateCameraWithPlayer)
+                if(rotateCameraWithPlayer && followerCamera.enabled)
                 {
                     followerCameraParent = followerCamera.transform.parent;
                     followerCamera.transform.parent = transform;
@@ -209,7 +211,7 @@ namespace mbs
                 transform.Rotate(Vector3.up, rotAngle);
 
                 // Rotates the camera with the player.
-                if(rotateCameraWithPlayer)
+                if(rotateCameraWithPlayer && followerCamera.enabled)
                 {
                     // Sets the camera back to normal.
                     followerCamera.transform.parent = followerCameraParent;

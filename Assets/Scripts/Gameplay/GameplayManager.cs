@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace mbs
 {
@@ -15,6 +15,9 @@ namespace mbs
 
         // The ground tag.
         public static string GROUND_TAG = "Ground";
+
+        // Set to 'true' to load stage in Initialize() function.
+        public bool loadStage = true;
 
         // The player for the game.
         public Player player;
@@ -56,6 +59,10 @@ namespace mbs
             // Finds the finish.
             if (finish == null)
                 finish = FindObjectOfType<Finish>();
+
+
+            // Initializes the game.
+            Initialize();
         }
 
         // Returns the instance of the gameplay manager.
@@ -73,6 +80,38 @@ namespace mbs
                 // Return instance.
                 return instance;
             }
+        }
+
+        // Initializes the gameplay manager.
+        private void Initialize()
+        {
+            // Loads the stage.
+            if(loadStage)
+            {
+                // Finds the stage start object.
+                StageStart start = FindObjectOfType<StageStart>();
+
+                // Stage does not exist. Throw error.
+                if (start == null)
+                {
+                    Debug.LogError("The stage could not be found.");
+                    // ...
+                }
+
+                // No stage scene has been set.
+                if (start.stageScene == string.Empty)
+                {
+                    Debug.LogError("No scene set.");
+                    // ...
+                }
+
+                // Adds the provided scene to the current scene.
+                // TODO: load the scene asynchronously.
+                SceneManager.LoadScene(start.stageScene, LoadSceneMode.Additive);
+            }
+            
+
+            // ... Do more.
         }
 
         // Rotates the 2D vector (around its z-axis).

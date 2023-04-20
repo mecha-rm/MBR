@@ -84,13 +84,13 @@ namespace mbs
         // Adds a callback for when the rail rider is detached from the rail.
         public void OnDetachFromRailAddCallback(RailRiderCallback callback)
         {
-            attachedCallback += callback;
+            detachedCallback += callback;
         }
 
         // Removes a callback for when the rail rider becomes detached from a rail.
         public void OnDetachFromRailRemoveCallback(RailRiderCallback callback)
         {
-            attachedCallback -= callback;
+            detachedCallback -= callback;
         }
 
         // Called when the rail has been detached.
