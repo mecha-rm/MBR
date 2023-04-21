@@ -12,7 +12,12 @@ namespace mbs
 
         // The player's rigidbody.
         // Freeze the y-position. The y-position is manually set by the user.
-        public Rigidbody rigidBody;
+        // Make sure to freeze the rotation, but leave the position.
+        public Rigidbody physicsBody;
+
+        // The rigidbody of the model, which is used to simulate rotations without effecting player input.
+        // NOTE: make sure to freeze the position, but leave the rotation.
+        public Rigidbody modelBody;
 
         // The camera following the player. This is used to determine how the player's inputs are processed.
         public FollowerCamera followerCamera;
@@ -51,13 +56,13 @@ namespace mbs
         void Start()
         {
             // Checks if the rigidbody exists.
-            if(rigidBody == null)
+            if(physicsBody == null)
             {
                 // Tries to get the rigidbody.
-                if(!TryGetComponent(out rigidBody))
+                if(!TryGetComponent(out physicsBody))
                 {
                     // Add the rigidbody.
-                    rigidBody = gameObject.AddComponent<Rigidbody>();
+                    physicsBody = gameObject.AddComponent<Rigidbody>();
                 }
             }
 
@@ -239,8 +244,35 @@ namespace mbs
             // Forward/Back
             if (vert != 0.0F)
             {
-                Vector3 direc = (followerCamera != null) ? followerCamera.transform.forward : transform.forward;
-                rigidBody.AddForce(direc * moveSpeed * vert * Time.deltaTime, ForceMode.Impulse);
+                // Old
+                // Vector3 direc = (followerCamera != null) ? followerCamera.transform.forward : transform.forward;
+
+                // New - Ver. 1 (make sure the object's forward is not changed).
+                Vector3 direc = transform.forward;
+
+                // New Ver. 2 - Doesn't Work
+                // // The current x-orientation (needs to be reset to default for object forward).
+                // float oldEulerX = transform.eulerAngles.x;
+                // 
+                // // Takes the euler angles and resets the x-orientation.
+                // Vector3 eulers = transform.eulerAngles;
+                // eulers.x = 0.0F;
+                // transform.eulerAngles = eulers;
+                // 
+                // // Gets the forward direction.
+                // Vector3 direc = transform.forward;
+                // 
+                // // Returns the euler back to normal.
+                // eulers.x = oldEulerX;
+                // transform.eulerAngles = eulers;
+
+                // Applies force.
+                Vector3 force = direc * moveSpeed * vert * Time.deltaTime;
+                physicsBody.AddForce(force, ForceMode.Impulse);
+
+                // Applies same force to the model body.
+                if(modelBody != null)
+                    modelBody.AddForce(force, ForceMode.Impulse);
             }
 
 
@@ -263,8 +295,15 @@ namespace mbs
                     Vector3 direc = Vector3.up; // New
 
                     // transform.Translate(direc.normalized);
-                    rigidBody.velocity = new Vector3(rigidBody.velocity.x, 0.0F, rigidBody.velocity.z);
-                    rigidBody.AddForce(direc.normalized * jumpPower * jump, ForceMode.Impulse); // Original
+                    physicsBody.velocity = new Vector3(physicsBody.velocity.x, 0.0F, physicsBody.velocity.z);
+
+                    // Applies the forces.
+                    Vector3 force = direc.normalized * jumpPower * jump;
+                    physicsBody.AddForce(force, ForceMode.Impulse); // Original
+
+                    // Add the impulse force.
+                    if (modelBody != null)
+                        modelBody.AddForce(force, ForceMode.Impulse);
 
                     // The player cannot jump, and their y-position shouldn't be followed.
                     canJump = false;
@@ -280,7 +319,7 @@ namespace mbs
             {
                 // If the player is descending again, start following their y-position once more.
                 // It also only happens if the rigidbody's velocity is negative or 0 (TODO: may not check velocity).
-                if ((transform.position - posOnJump).y < 0 && rigidBody.velocity.y < 0)
+                if ((transform.position - posOnJump).y < 0 && physicsBody.velocity.y < 0)
                 {
                     SetCameraTrackPlayerY(true);
                 }
