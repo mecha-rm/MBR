@@ -10,6 +10,16 @@ namespace mbs
         // The player tag.
         public static string PLAYER_TAG = "Player";
 
+        // Movement modes
+        /*
+         * 0/1: full directional movement
+         * 2: forward and back movement with rotation on horizontal.
+         */
+        private enum MoveMode { fourWay, forwardOnly }
+
+        // The player's movement mode - this is used for testing purposes, and should likely be removed later.
+        private MoveMode moveMode = MoveMode.fourWay;
+
         // The player's rigidbody.
         // Freeze the y-position. The y-position is manually set by the user.
         // Make sure to freeze the rotation, but leave the position.
@@ -30,6 +40,11 @@ namespace mbs
 
         // The rail rider script.
         public RailRider railRider;
+
+        [Header("Input")]
+
+        // Enables/disables user inputs.
+        public bool inputsEnabled = true;
 
         // The player's movement speed.
         private float moveSpeed = 20.0F; // TODO: make public when finished.
@@ -202,77 +217,96 @@ namespace mbs
             // Left/Right
             if (hori != 0.0F)
             {
-                // Rotation
-                float rotAngle = rotationInc * hori * Time.deltaTime;
+                switch(moveMode)
+                {
+                    case MoveMode.fourWay: // Four-way movement.
+
+                        // Movement
+                        // Vector3 direc = (playerCamera != null) ? playerCamera.transform.right : transform.right; // Original
+                        Vector3 direc = Vector3.right;
+                        physicsBody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Original
+
+                        // Apply force in the direction.
+                        // Vector3 direc = (followerCamera != null) ? followerCamera.transform.forward: transform.forward; // New
+                        // rigidBody.AddForce(direc * rotMoveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // New
+                        break;
+                    
+                    case MoveMode.forwardOnly:
+                        // Forward movement only.
+                        // Rotation
+                        float rotAngle = rotationInc * hori * Time.deltaTime;
+
+                        // Gets the camera's old parent, and sets its parent as being the current object.
+                        if (rotateCameraWithPlayer && followerCamera.enabled)
+                        {
+                            followerCameraParent = followerCamera.transform.parent;
+                            followerCamera.transform.parent = transform;
+                        }
+
+                        // Rotates the player.
+                        transform.Rotate(Vector3.up, rotAngle);
+
+                        // Rotates the camera with the player.
+                        if (rotateCameraWithPlayer && followerCamera.enabled)
+                        {
+                            // Sets the camera back to normal.
+                            followerCamera.transform.parent = followerCameraParent;
+
+                            // Calculates the new offset.
+                            followerCamera.posOffset = GameplayManager.RotateY(followerCamera.posOffset, rotAngle, true); // Rotation version.
+
+
+                            // Offset based on new positions - not using it since the camera pos may be different from its offset.
+                            // playerCamera.posOffset = playerCamera.transform.position - playerCamera.target.transform.position;
+
+                            // playerCamera.transform.RotateAround(transform.position, Vector3.up, rotAngle);
+                        }
+                        break;
+                }
                 
-                // Gets the camera's old parent, and sets its parent as being the current object.
-                if(rotateCameraWithPlayer && followerCamera.enabled)
-                {
-                    followerCameraParent = followerCamera.transform.parent;
-                    followerCamera.transform.parent = transform;
-                }
-
-                // Rotates the player.
-                transform.Rotate(Vector3.up, rotAngle);
-
-                // Rotates the camera with the player.
-                if(rotateCameraWithPlayer && followerCamera.enabled)
-                {
-                    // Sets the camera back to normal.
-                    followerCamera.transform.parent = followerCameraParent;
-
-                    // Calculates the new offset.
-                    followerCamera.posOffset = GameplayManager.RotateY(followerCamera.posOffset, rotAngle, true); // Rotation version.
 
 
-                    // Offset based on new positions - not using it since the camera pos may be different from its offset.
-                    // playerCamera.posOffset = playerCamera.transform.position - playerCamera.target.transform.position;
-
-                    // playerCamera.transform.RotateAround(transform.position, Vector3.up, rotAngle);
-                }
-
-
-                // Movement
-                // Vector3 direc = (playerCamera != null) ? playerCamera.transform.right : transform.right; // Original
-                // rigidBody.AddForce(direc * moveSpeed * hori, ForceMode.Impulse); // Original
-
-                // Apply force in the direction.
-                // Vector3 direc = (followerCamera != null) ? followerCamera.transform.forward: transform.forward; // New
-                // rigidBody.AddForce(direc * rotMoveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // New
             }
 
             // Forward/Back
             if (vert != 0.0F)
             {
-                // Old
-                // Vector3 direc = (followerCamera != null) ? followerCamera.transform.forward : transform.forward;
+                switch(moveMode)
+                {
+                    case MoveMode.fourWay: // All directional movement.
+                    case MoveMode.forwardOnly: // Forward movement only.
+                        // Old
+                        // Vector3 direc = (followerCamera != null) ? followerCamera.transform.forward : transform.forward;
 
-                // New - Ver. 1 (make sure the object's forward is not changed).
-                Vector3 direc = transform.forward;
+                        // New - Ver. 1 (make sure the object's forward is not changed).
+                        // Vector3 direc = transform.forward; // Old
+                        Vector3 direc = Vector3.forward; // New
 
-                // New Ver. 2 - Doesn't Work
-                // // The current x-orientation (needs to be reset to default for object forward).
-                // float oldEulerX = transform.eulerAngles.x;
-                // 
-                // // Takes the euler angles and resets the x-orientation.
-                // Vector3 eulers = transform.eulerAngles;
-                // eulers.x = 0.0F;
-                // transform.eulerAngles = eulers;
-                // 
-                // // Gets the forward direction.
-                // Vector3 direc = transform.forward;
-                // 
-                // // Returns the euler back to normal.
-                // eulers.x = oldEulerX;
-                // transform.eulerAngles = eulers;
+                        // New Ver. 2 - Doesn't Work
+                        // // The current x-orientation (needs to be reset to default for object forward).
+                        // float oldEulerX = transform.eulerAngles.x;
+                        // 
+                        // // Takes the euler angles and resets the x-orientation.
+                        // Vector3 eulers = transform.eulerAngles;
+                        // eulers.x = 0.0F;
+                        // transform.eulerAngles = eulers;
+                        // 
+                        // // Gets the forward direction.
+                        // Vector3 direc = transform.forward;
+                        // 
+                        // // Returns the euler back to normal.
+                        // eulers.x = oldEulerX;
+                        // transform.eulerAngles = eulers;
 
-                // Applies force.
-                Vector3 force = direc * moveSpeed * vert * Time.deltaTime;
-                physicsBody.AddForce(force, ForceMode.Impulse);
+                        // Applies force.
+                        Vector3 force = direc * moveSpeed * vert * Time.deltaTime;
+                        physicsBody.AddForce(force, ForceMode.Impulse);
 
-                // Applies same force to the model body.
-                if(modelBody != null)
-                    modelBody.AddForce(force, ForceMode.Impulse);
+                        // Applies same force to the model body.
+                        if (modelBody != null)
+                            modelBody.AddForce(force, ForceMode.Impulse);
+                        break;
+                }
             }
 
 
@@ -336,7 +370,9 @@ namespace mbs
         // Update is called once per frame
         void Update()
         {
-            UpdateInput();
+            // Updates player's inputs.
+            if(inputsEnabled)
+                UpdateInput();
         }
 
         // This function is called when the MonoBehaviour will be destroyed.
