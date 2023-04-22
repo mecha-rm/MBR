@@ -23,7 +23,10 @@ namespace mbs
         public Player player;
 
         // The finish area of the game.
-        public Finish finish;
+        public Goal goal;
+
+        // A parent object that contains all the debug assets. If a level is loaded successfully, the object is deleted.
+        public GameObject defaultAssets;
 
         [Header("Timer")]
 
@@ -57,8 +60,8 @@ namespace mbs
                 player = FindObjectOfType<Player>();
 
             // Finds the finish.
-            if (finish == null)
-                finish = FindObjectOfType<Finish>();
+            if (goal == null)
+                goal = FindObjectOfType<Goal>();
 
 
             // Initializes the game.
@@ -104,12 +107,40 @@ namespace mbs
                     Debug.LogError("No scene set.");
                     // ...
                 }
+                else
+                {
+                    // Adds the provided scene to the current scene.
+                    // TODO: load the scene asynchronously.
+                    SceneManager.LoadScene(start.stageScene, LoadSceneMode.Additive);
 
-                // Adds the provided scene to the current scene.
-                // TODO: load the scene asynchronously.
-                SceneManager.LoadScene(start.stageScene, LoadSceneMode.Additive);
+                    // Destoys all the default assets.
+                    if(defaultAssets != null)
+                        Destroy(defaultAssets);
+                }
             }
-            
+
+
+            // Spawn Transforms
+            // Finds the player and goal spawn.
+            PlayerSpawn playerSpawn = FindObjectOfType<PlayerSpawn>(true);
+            GoalSpawn goalSpawn = FindObjectOfType<GoalSpawn>(true);
+
+            // Player spawn found.
+            if(playerSpawn != null)
+            {
+                // Gets the player transform for the stage.
+                player.transform.position = playerSpawn.transform.position;
+                player.transform.rotation = playerSpawn.transform.rotation;
+            }
+
+
+            // Goal spawn found.
+            if (goalSpawn != null)
+            {
+                // Gets the goal transform for the stage.
+                goal.transform.position = goalSpawn.transform.position;
+                goal.transform.rotation = goalSpawn.transform.rotation;
+            }
 
             // ... Do more.
         }
@@ -239,7 +270,8 @@ namespace mbs
         // Called when the player has finished the course.
         public void OnFinish()
         {
-
+            // TODO: show results screen
+            SceneManager.LoadScene("TitleScene");
         }
 
         // Update is called once per frame

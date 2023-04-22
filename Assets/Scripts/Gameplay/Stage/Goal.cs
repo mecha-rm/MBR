@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace mbs
 {
-    // The finish area.
-    public class Finish : MonoBehaviour
+    // The game goal.
+    public class Goal : MonoBehaviour
     {
         // Start is called before the first frame update
         void Start()

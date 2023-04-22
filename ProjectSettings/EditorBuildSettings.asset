@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameScene.unity
     guid: 190198975727f024f80c423743317fcc
+  - enabled: 1
+    path: Assets/Scenes/Stages/STG_Castle1.unity
+    guid: 805ac7f07af29c642a0636e78df77ba1
   m_configObjects: {}
