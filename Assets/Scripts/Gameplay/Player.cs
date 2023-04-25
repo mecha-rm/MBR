@@ -35,6 +35,11 @@ namespace mbs
         // The parent of the follower camera.
         private Transform followerCameraParent = null;
 
+        // The target for virtual cameras.
+        // NOTE: if you use this for the virtual camera, make sure damping is set 0 for all pos and rotation.
+        // It causes stuttering if you don't.
+        public TransformCopy cameraTarget;
+
         // If set to 'true', the camera is rotated when the player rotates their body.
         public bool rotateCameraWithPlayer = true;
 
@@ -365,6 +370,7 @@ namespace mbs
         public void SetCameraTrackPlayerY(bool value)
         {
             followerCamera.followY = value;
+            cameraTarget.copyPositionY = value;
         }
 
         // Update is called once per frame
