@@ -72,8 +72,8 @@ namespace mbs
             transform.localScale = newScl;
         }
 
-        // Update is called once per frame
-        void Update()
+        // LateUpdate is called every frame, if the behaviour is enabled.
+        void LateUpdate()
         {
             // If the transform should be copied automatically.
             if(autoCopy)

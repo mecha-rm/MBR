@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,19 +30,10 @@ namespace mbs
         // NOTE: make sure to freeze the position, but leave the rotation.
         public Rigidbody modelBody;
 
-        // The camera following the player. This is used to determine how the player's inputs are processed.
-        public FollowerCamera followerCamera;
-
-        // The parent of the follower camera.
-        private Transform followerCameraParent = null;
-
         // The target for virtual cameras.
         // NOTE: if you use this for the virtual camera, make sure damping is set 0 for all pos and rotation.
         // It causes stuttering if you don't.
         public TransformCopy cameraTarget;
-
-        // If set to 'true', the camera is rotated when the player rotates their body.
-        public bool rotateCameraWithPlayer = true;
 
         // The rail rider script.
         public RailRider railRider;
@@ -178,24 +170,13 @@ namespace mbs
             canJump = true;
             SetCameraTrackPlayerY(true);
 
-            // If the camera should rotate along with the player.
-            if(rotateCameraWithPlayer)
-            {
-                followerCameraParent = followerCamera.transform.parent;
-                followerCamera.transform.parent = transform;
-                followerCamera.enabled = false; // Disable script so that the camera stays in a fixed position.
-            }
+            // ...
         }
 
         // Called when detaching from a rail.
         private void OnDetachFromRail(Rail rail, RailRider rider)
         {
-            // If the camera should roate with the player.
-            if(rotateCameraWithPlayer)
-            {
-                followerCamera.transform.parent = followerCameraParent;
-                followerCamera.enabled = true; // Enable script so that the camera goes back to its proper position.
-            }
+            // ...
         }
 
         // Called when changing positions on a rail.
@@ -241,31 +222,9 @@ namespace mbs
                         // Rotation
                         float rotAngle = rotationInc * hori * Time.deltaTime;
 
-                        // Gets the camera's old parent, and sets its parent as being the current object.
-                        if (rotateCameraWithPlayer && followerCamera.enabled)
-                        {
-                            followerCameraParent = followerCamera.transform.parent;
-                            followerCamera.transform.parent = transform;
-                        }
-
                         // Rotates the player.
                         transform.Rotate(Vector3.up, rotAngle);
 
-                        // Rotates the camera with the player.
-                        if (rotateCameraWithPlayer && followerCamera.enabled)
-                        {
-                            // Sets the camera back to normal.
-                            followerCamera.transform.parent = followerCameraParent;
-
-                            // Calculates the new offset.
-                            followerCamera.posOffset = GameplayManager.RotateY(followerCamera.posOffset, rotAngle, true); // Rotation version.
-
-
-                            // Offset based on new positions - not using it since the camera pos may be different from its offset.
-                            // playerCamera.posOffset = playerCamera.transform.position - playerCamera.target.transform.position;
-
-                            // playerCamera.transform.RotateAround(transform.position, Vector3.up, rotAngle);
-                        }
                         break;
                 }
                 
@@ -276,7 +235,24 @@ namespace mbs
             // Forward/Back
             if (vert != 0.0F)
             {
-                switch(moveMode)
+                // The travel direction.
+                Vector3 direc;
+
+                // Changes how direction is calculated.
+                switch (moveMode)
+                {
+                    case MoveMode.fourWay: // All directional movement.
+                        direc = Vector3.forward;
+                        break;
+
+                    case MoveMode.forwardOnly: // Forward movement only.
+                    default:
+                        direc = transform.forward;
+                        break;
+                }
+                
+                // Applies Force
+                switch (moveMode)
                 {
                     case MoveMode.fourWay: // All directional movement.
                     case MoveMode.forwardOnly: // Forward movement only.
@@ -285,7 +261,7 @@ namespace mbs
 
                         // New - Ver. 1 (make sure the object's forward is not changed).
                         // Vector3 direc = transform.forward; // Old
-                        Vector3 direc = Vector3.forward; // New
+                        // Vector3 direc = Vector3.forward; // New
 
                         // New Ver. 2 - Doesn't Work
                         // // The current x-orientation (needs to be reset to default for object forward).
@@ -354,7 +330,7 @@ namespace mbs
 
 
             // If the player's y-position is currently not being followed.
-            if(!followerCamera.followY)
+            if(!cameraTarget.copyPositionY)
             {
                 // If the player is descending again, start following their y-position once more.
                 // It also only happens if the rigidbody's velocity is negative or 0 (TODO: may not check velocity).
@@ -369,7 +345,6 @@ namespace mbs
         // Call to have the camera track the player's y-position again.
         public void SetCameraTrackPlayerY(bool value)
         {
-            followerCamera.followY = value;
             cameraTarget.copyPositionY = value;
         }
 

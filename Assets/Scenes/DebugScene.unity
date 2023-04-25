@@ -133,7 +133,6 @@ GameObject:
   m_Component:
   - component: {fileID: 275657236}
   - component: {fileID: 275657237}
-  - component: {fileID: 275657238}
   m_Layer: 0
   m_Name: Player Camera Target
   m_TagString: Untagged
@@ -152,9 +151,10 @@ Transform:
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 516943262}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &275657237
 MonoBehaviour:
@@ -173,28 +173,12 @@ MonoBehaviour:
   copyPositionX: 1
   copyPositionY: 1
   copyPositionZ: 1
-  copyRotationX: 1
+  copyRotationX: 0
   copyRotationY: 1
-  copyRotationZ: 1
+  copyRotationZ: 0
   copyScaleX: 1
   copyScaleY: 1
   copyScaleZ: 1
---- !u!54 &275657238
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 275657235}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &324899794
 GameObject:
   m_ObjectHideFlags: 0
@@ -257,14 +241,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 324899794}
-  m_LocalRotation: {x: 0.30517742, y: 0.00000001638556, z: -0.0000000052509987, w: 0.95229554}
+  m_LocalRotation: {x: 0.30517742, y: -0.000000016385561, z: 0.0000000052509987, w: 0.95229554}
   m_LocalPosition: {x: 0, y: 6, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2105450219}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &460360678
 GameObject:
@@ -344,7 +328,6 @@ GameObject:
   m_Component:
   - component: {fileID: 516943262}
   - component: {fileID: 516943261}
-  - component: {fileID: 516943263}
   m_Layer: 0
   m_Name: Player Camera
   m_TagString: Untagged
@@ -403,32 +386,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 516943259}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.75, z: -3}
+  m_LocalPosition: {x: 0, y: 0.75, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_Father: {fileID: 275657236}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &516943263
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 516943259}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e21a01984464f404889ca4ff65cdb08b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  camera: {fileID: 516943261}
-  target: {fileID: 275657235}
-  posOffset: {x: 0, y: 0, z: 0}
-  autoSetPosOffset: 1
-  followX: 1
-  followY: 1
-  followZ: 1
 --- !u!1 &584932498
 GameObject:
   m_ObjectHideFlags: 0
@@ -920,7 +884,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.30517742, y: 0.00000001638556, z: -0.0000000052509987, w: 0.95229554}
+  m_LocalRotation: {x: 0.30517742, y: -0.000000016385561, z: 0.0000000052509987, w: 0.95229554}
   m_LocalPosition: {x: 0, y: 6, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1376,7 +1340,6 @@ MonoBehaviour:
   paused: 0
   waypoints:
   - {x: -13, y: -15, z: 0}
-  - {x: -13, y: 0, z: 0}
   - {x: -13, y: 15, z: 0}
 --- !u!1 &1557398131
 GameObject:
@@ -1724,7 +1687,7 @@ Transform:
   - {fileID: 1917959475}
   - {fileID: 1470958530}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1917959474
 GameObject:
@@ -2013,9 +1976,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsBody: {fileID: 2082171574}
   modelBody: {fileID: 1604315103}
-  followerCamera: {fileID: 516943263}
   cameraTarget: {fileID: 275657237}
-  rotateCameraWithPlayer: 1
   railRider: {fileID: 0}
   inputsEnabled: 1
   jumpPower: 10
@@ -2130,9 +2091,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BindingMode: 1
   m_FollowOffset: {x: 0, y: 5, z: -7}
-  m_XDamping: 1
-  m_YDamping: 1
-  m_ZDamping: 1
+  m_XDamping: 0
+  m_YDamping: 0
+  m_ZDamping: 0
   m_AngularDampingMode: 0
   m_PitchDamping: 0
   m_YawDamping: 0
@@ -2154,8 +2115,8 @@ MonoBehaviour:
   m_LookaheadTime: 0
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 0
-  m_HorizontalDamping: 0.5
-  m_VerticalDamping: 0.5
+  m_HorizontalDamping: 0
+  m_VerticalDamping: 0
   m_ScreenX: 0.5
   m_ScreenY: 0.5
   m_DeadZoneWidth: 0
@@ -2207,7 +2168,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2140401165
 MonoBehaviour:

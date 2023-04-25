@@ -53,8 +53,10 @@ namespace mbs
             transform.position = newPos;
         }
 
-        // Update is called once per frame
-        void Update()
+        // LateUpdate is called once per frame, if the behaviour is enabled.
+        // Since this happens after all updates, it's recommended that follower cameras use this.
+        // Rigidbodies don't update until the update calls are finished, so it's best to use LateUpdate for that reason as well.
+        void LateUpdate()
         {
             OffsetPositionFromTarget();
         }
