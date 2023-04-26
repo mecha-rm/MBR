@@ -14,11 +14,17 @@ namespace mbs
         public float power = 10.0F;
 
         // If 'true', the player's velocity is set to a fixed amount, rather than being additive.
-        public bool setVelocity = true;
+        public bool fixedVelocity = true;
 
         // If 'true', the speed boost forward is used for the player's boost.
         // If 'false', the player's movement direction upon hitting the spood boster is used.
         public bool useSpeedBoostForward = true;
+
+        // If set to 'true', the player position is set to that of the speed booster.
+        public bool setPlayerPos = true;
+
+        // The position offset for repositioning the player when they hit the speed booster.
+        public Vector3 posOffset = Vector3.zero;
 
         [Header("After Effects")]
 
@@ -76,7 +82,7 @@ namespace mbs
             }
 
             // Zeroes out the velocity.
-            if (setVelocity)
+            if (fixedVelocity)
             {
                 // Reset physics body.
                 player.physicsBody.velocity = Vector3.zero;
@@ -122,6 +128,13 @@ namespace mbs
             if(player.modelBody != null)
                 player.modelBody.AddForce(direc * power, ForceMode.VelocityChange);
 
+
+            // If the player's position should be set.
+            if(setPlayerPos)
+            {
+                // Changes the player's position.
+                player.transform.position = transform.position + posOffset;
+            }
 
             // Locks player input for the set time.
             if(lockPlayerControls)
