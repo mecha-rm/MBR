@@ -12,6 +12,14 @@ namespace mbs
         public CinemachineVirtualCamera vcam1;
         public CinemachineVirtualCamera vcam2;
 
+        // Switches cameras when the collision is entered.
+        [Tooltip("If true, the cameras are switched when the collider is entered.")]
+        public bool switchOnEnter = true;
+
+        // Switches cameras when the collision is exited.
+        [Tooltip("If true, the cameras are switched when the collider is exited.")]
+        public bool switchOnExit = false;
+
         // Sets the active parameter of the whole object. If false, it only changes the component.
         [Tooltip("If true, gameObject.activeSelf is changed. If false, component.enabled is changed.")]
         public bool setActive = true;
@@ -20,18 +28,55 @@ namespace mbs
         [Tooltip("The list of supported tags. If no tags are provided, then any collider can trigger it.")]
         public List<string> tags = new List<string>();
 
+
+        // On collision enter.
         private void OnCollisionEnter(Collision collision)
         {
-            // Checks for valid tags.
-            if(tags.Count == 0 || tags.Contains(collision.gameObject.tag))
-                SwitchCameras();
+            // If the cameras should switch when the collision is entered.
+            if(switchOnEnter)
+            {
+                // Checks for valid tags.
+                if (tags.Count == 0 || tags.Contains(collision.gameObject.tag))
+                    SwitchCameras();
+            }
+            
         }
 
+        // On collision exit.
+        private void OnCollisionExit(Collision collision)
+        {
+            // If the cameras should switch when the collision is entered.
+            if (switchOnEnter)
+            {
+                // Checks for valid tags.
+                if (tags.Count == 0 || tags.Contains(collision.gameObject.tag))
+                    SwitchCameras();
+            }
+
+        }
+
+        // On trigger enter.
         private void OnTriggerEnter(Collider other)
         {
-            // Checks for valid tags.
-            if (tags.Count == 0 || tags.Contains(other.gameObject.tag))
-                SwitchCameras();
+            // If the cameras should switch when the collision is entered.
+            if (switchOnEnter)
+            {
+                // Checks for valid tags.
+                if (tags.Count == 0 || tags.Contains(other.gameObject.tag))
+                    SwitchCameras();
+            }
+        }
+
+        // On trigger exit.
+        private void OnTriggerExit(Collider other)
+        {
+            // If the cameras should switch when the collision is entered.
+            if (switchOnEnter)
+            {
+                // Checks for valid tags.
+                if (tags.Count == 0 || tags.Contains(other.gameObject.tag))
+                    SwitchCameras();
+            }
         }
 
         // Switch the cameras.

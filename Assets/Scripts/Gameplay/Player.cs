@@ -16,7 +16,7 @@ namespace mbs
          * 0/1: full directional movement
          * 2: forward and back movement with rotation on horizontal.
          */
-        private enum MoveMode { fourWay, forwardOnly }
+        public enum MoveMode { fourWay, forwardOnly }
 
         // The player's movement mode - this is used for testing purposes, and should likely be removed later.
         private MoveMode moveMode = MoveMode.fourWay;
@@ -50,7 +50,7 @@ namespace mbs
         private float rotationInc = 60.0F; // TODO: make public when finished.
 
         // The player's move speed when they rotate.
-        private float rotMoveSpeed = 8.0F; // TODO: make public when finished.
+        // private float rotMoveSpeed = 8.0F; // TODO: make public when finished.
 
         // The player's jump power.
         public float jumpPower = 10.0F; // TODO: make public when finished.
@@ -63,6 +63,11 @@ namespace mbs
 
         // // The up vector of the player (TODO: address)
         // private Vector3 playerUp = Vector3.up;
+
+        [Header("Input/Locks")]
+        // Unlocks movement for the player after this timer is set to 0 (time in seconds). This does NOT use inputEnabled.
+        // This timer won't go down if inputsEnabled is false.
+        public float inputUnlockTimer = 0.0F;
 
         // Start is called before the first frame update
         void Start()
@@ -162,6 +167,12 @@ namespace mbs
             //{
             //    OnDetachFromRail();
             //}
+        }
+
+        // Gets the player's movement mode.
+        public MoveMode MovementMode
+        {
+            get { return moveMode; }
         }
 
         // Called when attaching to a rail.
@@ -353,7 +364,30 @@ namespace mbs
         {
             // Updates player's inputs.
             if(inputsEnabled)
-                UpdateInput();
+            {
+                // Checks if the player is allowed to have control.
+                if(inputUnlockTimer <= 0.0F)
+                {
+                    UpdateInput();
+                }
+                else // Reduce timer.
+                {
+                    // Reduces the timer.
+                    inputUnlockTimer -= Time.deltaTime;
+
+                    // Makes sure it stops at 0.
+                    if (inputUnlockTimer <= 0)
+                    {
+                        // Timer set to 0.
+                        inputUnlockTimer = 0.0F;
+
+                        // Turn gravity back on.
+                        physicsBody.useGravity = true;
+                        modelBody.useGravity = true;
+                    }
+                        
+                }
+            }
         }
 
         // This function is called when the MonoBehaviour will be destroyed.
