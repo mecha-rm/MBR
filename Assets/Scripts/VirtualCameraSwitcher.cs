@@ -46,7 +46,7 @@ namespace mbs
         private void OnCollisionExit(Collision collision)
         {
             // If the cameras should switch when the collision is entered.
-            if (switchOnEnter)
+            if (switchOnExit)
             {
                 // Checks for valid tags.
                 if (tags.Count == 0 || tags.Contains(collision.gameObject.tag))
@@ -71,7 +71,7 @@ namespace mbs
         private void OnTriggerExit(Collider other)
         {
             // If the cameras should switch when the collision is entered.
-            if (switchOnEnter)
+            if (switchOnExit)
             {
                 // Checks for valid tags.
                 if (tags.Count == 0 || tags.Contains(other.gameObject.tag))
@@ -97,6 +97,7 @@ namespace mbs
                 vcam1.enabled = active;
                 vcam2.enabled = !active;
             }
+       
         }
     }
 }

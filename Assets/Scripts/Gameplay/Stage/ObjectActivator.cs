@@ -8,7 +8,7 @@ namespace mbs
     public class ObjectActivator : MonoBehaviour
     {
         // Determines if the object's are activated or de-activated.
-        [Header("The value put in for SetActive() on the list objects.")]
+        [Tooltip("The value put in for SetActive() on the list objects.")]
         public bool active = true;
 
         // Destroys this object upon setting the active parameter of the objects.
