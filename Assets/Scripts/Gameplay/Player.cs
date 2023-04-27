@@ -30,6 +30,9 @@ namespace mbs
         // NOTE: make sure to freeze the position, but leave the rotation.
         public Rigidbody modelBody;
 
+        // Automatically updates the model's rigidbody.
+        public bool autoUpdateModel = true;
+
         // The target for virtual cameras.
         // NOTE: if you use this for the virtual camera, make sure damping is set 0 for all pos and rotation.
         // It causes stuttering if you don't.
@@ -82,6 +85,10 @@ namespace mbs
                     physicsBody = gameObject.AddComponent<Rigidbody>();
                 }
             }
+
+            // Tries to get the rigidbody from the children.
+            if (modelBody == null)
+                modelBody = GetComponentInChildren<Rigidbody>();
 
             // Grabs the rail rider.
             if (railRider == null)
@@ -181,13 +188,16 @@ namespace mbs
             canJump = true;
             SetCameraTrackPlayerY(true);
 
-            // ...
+            // Stops updating the model.
+            modelBody.angularVelocity = Vector3.zero;
+            autoUpdateModel = false;
         }
 
         // Called when detaching from a rail.
         private void OnDetachFromRail(Rail rail, RailRider rider)
         {
-            // ...
+            // Starts updating the model again.
+            autoUpdateModel = true;
         }
 
         // Called when changing positions on a rail.
@@ -294,13 +304,9 @@ namespace mbs
                         Vector3 force = direc * moveSpeed * vert * Time.deltaTime;
                         physicsBody.AddForce(force, ForceMode.Impulse);
 
-                        // Applies same force to the model body.
-                        if (modelBody != null)
-                            modelBody.AddForce(force, ForceMode.Impulse);
                         break;
                 }
             }
-
 
             // Jump
             // if (canJump && Input.GetKeyDown(KeyCode.Space))
@@ -327,10 +333,6 @@ namespace mbs
                     Vector3 force = direc.normalized * jumpPower * jump;
                     physicsBody.AddForce(force, ForceMode.Impulse); // Original
 
-                    // Add the impulse force.
-                    if (modelBody != null)
-                        modelBody.AddForce(force, ForceMode.Impulse);
-
                     // The player cannot jump, and their y-position shouldn't be followed.
                     canJump = false;
                     
@@ -351,6 +353,23 @@ namespace mbs
                 }
                     
             }
+                
+        }
+
+        // Updates the model's angular velocity relative to the player's velocity.
+        public void UpdateModelAngularVelocity()
+        {
+            // The model body is not set.
+            if (modelBody == null)
+                return;
+
+            // Update the angular velocity.
+            Vector3 angular;
+            angular.x = physicsBody.velocity.z;
+            angular.y = physicsBody.velocity.y;
+            angular.z = -physicsBody.velocity.x;
+
+            modelBody.angularVelocity = angular;
         }
 
         // Call to have the camera track the player's y-position again.
@@ -383,11 +402,14 @@ namespace mbs
 
                         // Turn gravity back on.
                         physicsBody.useGravity = true;
-                        modelBody.useGravity = true;
                     }
                         
                 }
             }
+
+            // Updates the model's angular velocity.
+            if(autoUpdateModel)
+                UpdateModelAngularVelocity();
         }
 
         // This function is called when the MonoBehaviour will be destroyed.
