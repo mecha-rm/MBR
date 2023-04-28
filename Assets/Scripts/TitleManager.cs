@@ -11,6 +11,9 @@ namespace mbs
         // The instance of the game.
         private static TitleManager instance;
 
+        // Used for initializing the singleton.
+        private bool initialized = false;
+
         // Constructor
         private TitleManager()
         {
@@ -24,6 +27,13 @@ namespace mbs
             if (instance == null)
             {
                 instance = this;
+            }
+
+
+            // Implement any Awake code here for initializing the singleton.
+            if(!initialized)
+            {
+                initialized = true;
             }
         }
 

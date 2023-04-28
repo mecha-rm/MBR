@@ -13,6 +13,9 @@ namespace mbs
         // The instancce of the GameplayManager.
         public static GameplayManager instance;
 
+        // Used to initialize the singleton.
+        private bool initialized = false;
+
         // The ground tag.
         public static string GROUND_TAG = "Ground";
 
@@ -49,6 +52,12 @@ namespace mbs
             if (instance == null)
             {
                 instance = this;
+            }
+
+            // Implement any Awake code here for initializing the singleton.
+            if (!initialized)
+            {
+                initialized = true;
             }
         }
 
