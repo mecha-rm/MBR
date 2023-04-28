@@ -109,7 +109,27 @@ namespace mbs
 
             // Tries to detach from the rail.
             if (rail != null)
-                result = rail.TryDetachFromRail(gameObject);
+            {
+                // NOTE: you may not want to multiply by Time.deltaTime since this is a one-time force...
+                // But otherwise it appears to jump forward too fast.
+
+                // Old - generates an even amount of force regardless of where the rider is on the rail.
+                // The movement direction.
+                Vector3 direc = (endPoint.transform.position - startPoint.transform.position).normalized;
+                
+                // The force generated.
+                Vector3 posStep = direc.normalized * rail.speed * speed * Time.deltaTime;
+                
+                // The simulated old position.
+                Vector3 simOldPos = transform.position - posStep;
+                
+                // Calculates the position.
+                result = rail.TryDetachFromRail(this, simOldPos);
+
+                // // New - uses MoveTowards - works about the same, but on corners the jump forward force is reduced.
+                // float step = rail.speed * speed * Time.deltaTime;
+                // result = rail.TryDetachFromRail(this, Vector3.MoveTowards(transform.position, startPoint.transform.position, step));
+            }
 
             return result;
         }

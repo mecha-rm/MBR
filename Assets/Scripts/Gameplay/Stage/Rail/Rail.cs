@@ -39,6 +39,10 @@ namespace mbs
         [Tooltip("The number of samples for curved movement. This has no effect if linear mode is used.")]
         public int samples = 11;
 
+        // The launch power of being released from the rail.
+        [Tooltip("Launch power when the object is released off of the rail.")]
+        public float launchPower = 1.0F;
+
         // If set to 'true', the rail loops.
         [Tooltip("If true, the rail loops back to the start.")]
         public bool loopRail = false;
@@ -264,8 +268,15 @@ namespace mbs
         }
 
 
+        // Checks if the rider is attached to the rail.
+        public bool IsRiderAttached(RailRider rider)
+        {
+            bool result = riders.Contains(rider);
+            return result;
+        }
+
         // Tries to detach from the rail.
-        public bool TryDetachFromRail(GameObject entity)
+        public bool TryDetachFromRail(GameObject entity, Vector3 oldPos)
         {
             // The rider component.
             RailRider rider;
@@ -275,12 +286,39 @@ namespace mbs
             {
                 // If the rider is in the list, detach them from the rail.
                 if (riders.Contains(rider) || rider.rail != null)
-                    DetachFromRail(rider);
+                    DetachFromRail(rider, oldPos);
             }
 
             // Checks to see that rider was removed.
             bool removed = !riders.Contains(rider);
             return removed;
+        }
+
+        // Tries to detach from the rail.
+        public bool TryDetachFromRail(GameObject entity)
+        {
+            return TryDetachFromRail(entity, entity.transform.position);
+        }
+
+
+        // Tries to detach the rider from the rail.
+        public bool TryDetachFromRail(RailRider rider, Vector3 oldPos)
+        {
+            // If the rider is in the list, detach them from the rail.
+            if (riders.Contains(rider) || rider.rail != null)
+                DetachFromRail(rider, oldPos);
+
+            // Checks to see that rider was removed.
+            bool removed = !riders.Contains(rider);
+
+            // Return removed.
+            return removed;
+        }
+
+        // Tries to detach from the rail.
+        public bool TryDetachFromRail(RailRider rider)
+        {
+            return TryDetachFromRail(rider, rider.transform.position);
         }
 
         // Detaches the provided rider from the rail.
@@ -321,8 +359,14 @@ namespace mbs
             // If the rider doesn't have a rigidbody (TODO: this doesn't appear to work at adding force).
             if(rider.rigidbody != null)
             {
-                // Calculates the force after being pushed off. TODO: the multiple is by 10, which may need to be changed.
-                Vector3 force = (rider.transform.position - oldPos) * Vector3.Distance(rider.transform.position, oldPos) * 10.0F;
+                // Calculates the force after being pushed off.
+                // The speed of the rider should already be taken into account when moving from oldPos to newPos.
+                Vector3 force = (rider.transform.position - oldPos).normalized *  Vector3.Distance(rider.transform.position, oldPos);
+                
+                // Apply launch power of rail.
+                force *= launchPower;
+
+                // Apply force.
                 rider.rigidbody.AddForce(force, ForceMode.Impulse);
             }
 
@@ -336,12 +380,6 @@ namespace mbs
             DetachFromRail(rider, rider.transform.position);
         }
 
-        // Checks if the rider is attached to the rail.
-        public bool IsRiderAttached(RailRider rider)
-        {
-            bool result = riders.Contains(rider);
-            return result;
-        }
 
 
         // MOVEMENT
@@ -437,6 +475,10 @@ namespace mbs
                         // Gets the end index.
                         int endIndex = waypoints.IndexOf(rider.endPoint);
 
+                        // Simulated old position based on the movement speed.
+                        Vector3 simOldPos = Vector3.MoveTowards(
+                            rider.endPoint.transform.position, rider.startPoint.transform.position, step);
+
                         // The end index is valid.
                         if (endIndex >= 0 && endIndex < waypoints.Count)
                         {
@@ -458,14 +500,16 @@ namespace mbs
                                 }
                                 else // Doesn't loop.
                                 {
-                                    DetachFromRail(rider, riderOldPos);
+                                    // DetachFromRail(rider, riderOldPos); // Old
+                                    DetachFromRail(rider, simOldPos); // New
                                 }
                             }
                         }
                         else
                         {
                             // Release from the rail.
-                            DetachFromRail(rider, riderOldPos);
+                            // DetachFromRail(rider, riderOldPos); // Old
+                            DetachFromRail(rider, simOldPos); // New
                         }
                     }
 

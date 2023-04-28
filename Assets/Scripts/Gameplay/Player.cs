@@ -13,10 +13,12 @@ namespace mbs
 
         // Movement modes
         /*
-         * 0/1: full directional movement
-         * 2: forward and back movement with rotation on horizontal.
+         * fourWay: full directional movement
+         * forwardOnly: forward and back movement with rotation on horizontal.
+         * xy2d: move on a 2D plane (XY). Make sure to disable the unused axis.
+         * zy2d: move on a 2D plane (ZY). Make sure to disable the unused axis.
          */
-        public enum MoveMode { fourWay, forwardOnly }
+        public enum MoveMode { fourWay, forwardOnly, xy2d, zy2d }
 
         // The player's movement mode - this is used for testing purposes, and should likely be removed later.
         private MoveMode moveMode = MoveMode.fourWay;
@@ -179,7 +181,45 @@ namespace mbs
         // Gets the player's movement mode.
         public MoveMode MovementMode
         {
-            get { return moveMode; }
+            get 
+            { 
+                return moveMode; 
+            }
+
+            set
+            {
+                // Sets the new movement mode.
+                moveMode = value;
+
+                // The rigidbody constaints.
+
+                // TODO: test this.
+
+                // Checks if the new move mode is 2D or 3D.
+                switch (moveMode)
+                {
+                    // 3D movement.
+                    case MoveMode.fourWay:
+                    case MoveMode.forwardOnly:
+
+                        // Allow all axes of movement, and then freezes the rotation.
+                        physicsBody.constraints = RigidbodyConstraints.None;
+                        physicsBody.constraints = RigidbodyConstraints.FreezeRotation;
+                        break;
+
+                    // 2d movement.
+                    case MoveMode.xy2d: // frozen on z-axis.
+                        physicsBody.constraints = RigidbodyConstraints.None;
+                        physicsBody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
+                        break;
+
+                    case MoveMode.zy2d: // frozen on x-axis.
+                        physicsBody.constraints = RigidbodyConstraints.None;
+                        physicsBody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotation;
+                        break;
+
+                }
+            }
         }
 
         // Called when attaching to a rail.
@@ -206,6 +246,9 @@ namespace mbs
             // ...
         }
 
+
+        // INPUTS //
+
         // Updates the player's inputs.
         private void UpdateInput()
         {
@@ -224,13 +267,16 @@ namespace mbs
             // Left/Right
             if (hori != 0.0F)
             {
-                switch(moveMode)
+                // The movement direction.
+                Vector3 direc = Vector3.zero;
+
+                switch (moveMode)
                 {
                     case MoveMode.fourWay: // Four-way movement.
 
                         // Movement
                         // Vector3 direc = (playerCamera != null) ? playerCamera.transform.right : transform.right; // Original
-                        Vector3 direc = Vector3.right;
+                        direc = Vector3.right;
                         physicsBody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Original
 
                         // Apply force in the direction.
@@ -238,8 +284,7 @@ namespace mbs
                         // rigidBody.AddForce(direc * rotMoveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // New
                         break;
                     
-                    case MoveMode.forwardOnly:
-                        // Forward movement only.
+                    case MoveMode.forwardOnly: // Forward movement only.
                         // Rotation
                         float rotAngle = rotationInc * hori * Time.deltaTime;
 
@@ -247,17 +292,31 @@ namespace mbs
                         transform.Rotate(Vector3.up, rotAngle);
 
                         break;
+
+                    case MoveMode.xy2d: // 2D Movement (XY)
+                        
+                        direc = Vector3.right;
+                        physicsBody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Move on the x-axis.
+
+                        break;
+
+                    case MoveMode.zy2d: // 2D Movement (ZY)
+                        direc = Vector3.forward; // Forward
+                        physicsBody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Move on the z-axis.
+
+                        break;
+
                 }
                 
 
 
             }
 
-            // Forward/Back
+            // Forward/Back (3D only)
             if (vert != 0.0F)
             {
                 // The travel direction.
-                Vector3 direc;
+                Vector3 direc = Vector3.zero;
 
                 // Changes how direction is calculated.
                 switch (moveMode)
@@ -267,7 +326,6 @@ namespace mbs
                         break;
 
                     case MoveMode.forwardOnly: // Forward movement only.
-                    default:
                         direc = transform.forward;
                         break;
                 }
