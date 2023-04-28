@@ -15,8 +15,8 @@ namespace mbs
         public GameObject startPoint;
         public GameObject endPoint;
 
-        // The t-value for going along the rail.
-        public float railT = 0.0F;
+        // // The t-value for going along the rail. - OLD
+        // public float railT = 0.0F;
 
         // The speed of the rail rider.
         public float speed = 1.0F;

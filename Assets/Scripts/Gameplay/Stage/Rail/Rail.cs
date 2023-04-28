@@ -14,7 +14,7 @@ namespace mbs
         public static string RAIL_TAG = "Rail";
 
         // The speed of the rail.
-        public float speed = 1.0F;
+        public float speed = 10.0F;
 
         // If set to 'true', the rail loops.
         public bool loopPoints = false;
@@ -183,35 +183,65 @@ namespace mbs
                 }
             }
 
+            // LERP CALCULATION (OLD)
+            // // If the count is greater than 0, average out for the t-value.
+            // if (count != 0)
+            // {
+            //     // Calculate the rail t value.
+            //     rider.railT = tSum / count;
+            // }
+            // else // The two points perfectly overlap.
+            // {
+            //     // Just set the value to 0.0F.
+            //     rider.railT = 0;
+            // }
+            // 
+            // // Checks if the rider.railT is beyond the set points.
+            // // If it is, then move onto either the next or previous rail segment.
+            // if (rider.railT > 1) // Move onto next point since it's greater than 1.
+            // {
+            //     rider.startPoint = closestPoint;
+            //     rider.endPoint = (closestIndex < points.Count - 1) ? points[closestIndex + 1] : null;
+            //     rider.railT -= 1;
+            // }
+            // else if (rider.railT < 0) // Move onto previous point since it's less than 1.
+            // {
+            //     rider.startPoint = (closestIndex > 0) ? points[closestIndex - 1] : null;
+            //     rider.endPoint = closestPoint;
+            //     rider.railT += 1;
+            // }
+            // 
+            // // Clamp the vlaue so that it's between (0, 1).
+            // rider.railT = Mathf.Clamp01(rider.railT);
+
+            // NEW - recalculate rail segment, but don't save T since moveTowards is being used.
+            // The t-value of the rail, if used for a LERP calculation.
+            float railT = 0.0F;
+
             // If the count is greater than 0, average out for the t-value.
             if (count != 0)
             {
                 // Calculate the rail t value.
-                rider.railT = tSum / count;
+                railT = tSum / count;
             }
             else // The two points perfectly overlap.
             {
                 // Just set the value to 0.0F.
-                rider.railT = 0;
+                railT = 0;
             }
-
-            // Checks if the rider.railT is beyond the set points.
+            
+            // Checks if the railT is beyond the set points.
             // If it is, then move onto either the next or previous rail segment.
-            if (rider.railT > 1) // Move onto next point since it's greater than 1.
+            if (railT > 1) // Move onto next point since it's greater than 1.
             {
                 rider.startPoint = closestPoint;
                 rider.endPoint = (closestIndex < points.Count - 1) ? points[closestIndex + 1] : null;
-                rider.railT -= 1;
             }
-            else if (rider.railT < 0) // Move onto previous point since it's less than 1.
+            else if (railT < 0) // Move onto previous point since it's less than 1.
             {
                 rider.startPoint = (closestIndex > 0) ? points[closestIndex - 1] : null;
                 rider.endPoint = closestPoint;
-                rider.railT += 1;
             }
-
-            // Clamp the vlaue so that it's between (0, 1).
-            rider.railT = Mathf.Clamp01(rider.railT);
         }
 
 
@@ -261,8 +291,8 @@ namespace mbs
             rider.startPoint = null;
             rider.endPoint = null;
 
-            // The rail t-value is now 0.
-            rider.railT = 0.0F;
+            // The rail t-value is now 0 (no longer used).
+            // rider.railT = 0.0F;
 
             // Makes sure that the rider has the same up as their endpoint.
             rider.transform.up = endPointUp;
@@ -315,23 +345,37 @@ namespace mbs
                     if (rider.startPoint == null || rider.endPoint == null)
                         CalculateStartAndEndPoints(rider);
 
-                    // Increase t, and clamp it.
-                    rider.railT += Time.deltaTime * speed * rider.speed;
-                    rider.railT = Mathf.Clamp01(rider.railT);
+                    // Lerp - OLD
+                    // // Increase t, and clamp it. - Old
+                    // rider.railT += Time.deltaTime * speed * rider.speed;
+                    // rider.railT = Mathf.Clamp01(rider.railT);
+                    // 
+                    // // Calculate the step for travel.
+                    // 
+                    // // The previous position of the rider.
+                    // Vector3 riderOldPos = rider.transform.position;
+                    // 
+                    // // Update the postion.
+                    // rider.transform.position =
+                    //     Vector3.Lerp(
+                    //         rider.startPoint.transform.position,
+                    //         rider.endPoint.transform.position,
+                    //         rider.railT);
+                    // 
 
-                    // The previous position of the rider.
+                    // Move Towards (New)
+                    // Movement step.
+                    float step = speed * rider.speed * Time.deltaTime;
+                    
+                    // Old position of the rider.
                     Vector3 riderOldPos = rider.transform.position;
 
-                    // Update the postion.
-                    rider.transform.position =
-                        Vector3.Lerp(
-                            rider.startPoint.transform.position,
-                            rider.endPoint.transform.position,
-                            rider.railT);
+                    // Move towards the new position.
+                    rider.transform.position = Vector3.MoveTowards(rider.transform.position, rider.endPoint.transform.position, step);
 
-
-                    // Face direction of movement.
-                    rider.transform.forward = (rider.transform.position - riderOldPos).normalized;
+                    // Face direction of movement. If the rider didn't move, then they continue to face the same direction.
+                    if(rider.transform.position != riderOldPos)
+                        rider.transform.forward = (rider.transform.position - riderOldPos).normalized;
 
                     // TODO: fgure out the up-direction from the rail.
 
@@ -341,8 +385,18 @@ namespace mbs
                         rider.rigidbody.velocity = Vector3.zero;
                     }
 
+                    
+                    // Marks end of segment.
+                    bool endOfSegment = false;
+
+                    // Old (Lerp)
+                    // endOfSegment = rider.railT >= 1.0F
+
+                    // New (Move Towards)
+                    endOfSegment = rider.transform.position == rider.endPoint.transform.position;
+
                     // End of rail segment.
-                    if (rider.railT >= 1.0F)
+                    if (endOfSegment)
                     {
                         // Gets the end index.
                         int endIndex = points.IndexOf(rider.endPoint);
@@ -355,7 +409,7 @@ namespace mbs
                             {
                                 rider.startPoint = rider.endPoint;
                                 rider.endPoint = points[endIndex + 1];
-                                rider.railT = 0.0F;
+                                // rider.railT = 0.0F; // No longer using lerp.
                             }
                             else // Last point.
                             {
@@ -364,7 +418,7 @@ namespace mbs
                                 {
                                     rider.startPoint = rider.endPoint;
                                     rider.endPoint = points[0];
-                                    rider.railT = 0.0F;
+                                    // rider.railT = 0.0F; // No longer using lerp.
                                 }
                                 else // Doesn't loop.
                                 {
