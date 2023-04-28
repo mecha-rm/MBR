@@ -10,20 +10,39 @@ namespace mbs
     // A rail that's used to transport the player.
     public class Rail : MonoBehaviour
     {
+        /*
+         * The mode of the rail.
+         * Linear: straight path from point to point.
+         * Bezier: curved approach to points using the bezier method.
+         * Catmull-Rom: curved appraoch to points using the catmull-rom meethod. 
+         */
+        public enum railMode { linear, bezier, catmullRom }
+
         // The tag for rails.
         public static string RAIL_TAG = "Rail";
 
-        // The speed of the rail.
-        public float speed = 10.0F;
-
-        // If set to 'true', the rail loops.
-        public bool loopPoints = false;
-
         // The points on the rail that is used to transport the player.
-        public List<GameObject> points = new List<GameObject>();
+        public List<RailWaypoint> waypoints = new List<RailWaypoint>();
 
         // The objects attached to this rail.
         public List<RailRider> riders = new List<RailRider>();
+
+        // The movement mode of the rail.
+        [Tooltip("The movement mode of the rail.")]
+        public railMode mode = railMode.linear;
+
+        // The speed of the rail.
+        [Tooltip("The speed of the rail.")]
+        public float speed = 10.0F;
+
+        // The number of samples for curved rail modes.
+        [Tooltip("The number of samples for curved movement. This has no effect if linear mode is used.")]
+        public int samples = 11;
+
+        // If set to 'true', the rail loops.
+        [Tooltip("If true, the rail loops back to the start.")]
+        public bool loopRail = false;
+
 
         // Start is called before the first frame update
         void Start()
@@ -98,15 +117,15 @@ namespace mbs
         private void CalculateStartAndEndPoints(RailRider rider)
         {
             // Checks if ther there points to connect to.
-            if (points.Count <= 1)
+            if (waypoints.Count <= 1)
                 return;
 
             // The closest point.
-            GameObject closestPoint = points[0];
+            RailWaypoint closestPoint = waypoints[0];
             float closestDist = Vector3.Distance(closestPoint.transform.position, rider.transform.position);
 
             // Goes through all the points.
-            foreach (GameObject point in points)
+            foreach (RailWaypoint point in waypoints)
             {
                 float currDist = (point.transform.position - rider.transform.position).magnitude;
 
@@ -122,24 +141,24 @@ namespace mbs
             // Calculates if the cloest point should be the start point or end point.
 
             // Gets the index of the closest point.
-            int closestIndex = points.IndexOf(closestPoint);
+            int closestIndex = waypoints.IndexOf(closestPoint);
 
             // Checks the cloest index.
-            if (closestIndex >= 0 && closestIndex < points.Count - 1) // Start of the rail.
+            if (closestIndex >= 0 && closestIndex < waypoints.Count - 1) // Start of the rail.
             {
                 rider.startPoint = closestPoint;
-                rider.endPoint = points[closestIndex + 1];
+                rider.endPoint = waypoints[closestIndex + 1];
             }
-            else if (closestIndex == points.Count - 1) // End of the rail.
+            else if (closestIndex == waypoints.Count - 1) // End of the rail.
             {
-                rider.startPoint = points[closestIndex - 1];
+                rider.startPoint = waypoints[closestIndex - 1];
                 rider.endPoint = closestPoint;
             }
             else // Some point along the rail.
             {
                 // Gets the previous point and next point.
-                GameObject prevPoint = points[closestIndex - 1];
-                GameObject nextPoint = points[closestIndex + 1];
+                RailWaypoint prevPoint = waypoints[closestIndex - 1];
+                RailWaypoint nextPoint = waypoints[closestIndex + 1];
 
                 // Gets the distance to the previous point and next point.
                 float prevDist = Vector3.Distance(rider.transform.position, prevPoint.transform.position);
@@ -235,11 +254,11 @@ namespace mbs
             if (railT > 1) // Move onto next point since it's greater than 1.
             {
                 rider.startPoint = closestPoint;
-                rider.endPoint = (closestIndex < points.Count - 1) ? points[closestIndex + 1] : null;
+                rider.endPoint = (closestIndex < waypoints.Count - 1) ? waypoints[closestIndex + 1] : null;
             }
             else if (railT < 0) // Move onto previous point since it's less than 1.
             {
-                rider.startPoint = (closestIndex > 0) ? points[closestIndex - 1] : null;
+                rider.startPoint = (closestIndex > 0) ? waypoints[closestIndex - 1] : null;
                 rider.endPoint = closestPoint;
             }
         }
@@ -324,6 +343,23 @@ namespace mbs
             return result;
         }
 
+
+        // MOVEMENT
+
+        // Returns the bezier position with the current position, startPoint, and endPoint.
+        private Vector3 GetBezierPosition(RailRider rider, RailWaypoint startPoint, RailWaypoint endPoint)
+        {
+            // TODO: implement.
+            return new Vector3();
+        }
+
+        // Returns the catmull-rom position with the current position, startPoint, and endPoint.
+        private Vector3 GetCatmullRomPosition(RailRider rider, RailWaypoint p0, RailWaypoint p1, RailWaypoint p2, RailWaypoint p3)
+        {
+            // TODO: implement.
+            return new Vector3();
+        }
+
         // Update is called once per frame
         void Update()
         {
@@ -331,7 +367,7 @@ namespace mbs
             // TODO: make sure the user goes the same speed across the whole rail.
 
             // IF the rail has points to travel along.
-            if(points.Count > 1 && riders.Count > 0)
+            if(waypoints.Count > 1 && riders.Count > 0)
             {
                 // Goes through all riders.
                 for(int i = riders.Count - 1; i >= 0; i--)
@@ -399,25 +435,25 @@ namespace mbs
                     if (endOfSegment)
                     {
                         // Gets the end index.
-                        int endIndex = points.IndexOf(rider.endPoint);
+                        int endIndex = waypoints.IndexOf(rider.endPoint);
 
                         // The end index is valid.
-                        if (endIndex >= 0 && endIndex < points.Count)
+                        if (endIndex >= 0 && endIndex < waypoints.Count)
                         {
                             // Checks if this is the last point in the list.
-                            if ((endIndex + 1) < points.Count) // Not last point.
+                            if ((endIndex + 1) < waypoints.Count) // Not last point.
                             {
                                 rider.startPoint = rider.endPoint;
-                                rider.endPoint = points[endIndex + 1];
+                                rider.endPoint = waypoints[endIndex + 1];
                                 // rider.railT = 0.0F; // No longer using lerp.
                             }
                             else // Last point.
                             {
                                 // If the rail loops, loop back to the start.
-                                if (loopPoints)
+                                if (loopRail)
                                 {
                                     rider.startPoint = rider.endPoint;
-                                    rider.endPoint = points[0];
+                                    rider.endPoint = waypoints[0];
                                     // rider.railT = 0.0F; // No longer using lerp.
                                 }
                                 else // Doesn't loop.

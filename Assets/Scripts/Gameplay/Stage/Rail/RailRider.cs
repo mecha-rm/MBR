@@ -12,8 +12,8 @@ namespace mbs
         public Rail rail;
 
         // The start point and end points.
-        public GameObject startPoint;
-        public GameObject endPoint;
+        public RailWaypoint startPoint;
+        public RailWaypoint endPoint;
 
         // // The t-value for going along the rail. - OLD
         // public float railT = 0.0F;
