@@ -359,6 +359,7 @@ namespace mbs
         // Updates the model's angular velocity relative to the player's velocity.
         public void UpdateModelAngularVelocity()
         {
+            // TODO: you usually don't manually change angular velocity, so find a better way to do this.
             // The model body is not set.
             if (modelBody == null)
                 return;
