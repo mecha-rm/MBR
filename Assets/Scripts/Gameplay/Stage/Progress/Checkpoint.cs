@@ -14,6 +14,9 @@ namespace mbs
         // The camera set for this checkpoint.
         public CinemachineVirtualCamera vcam;
 
+        // The movement mode of the player when they hit the checkpoint.
+        private Player.MoveMode playerMode;
+
         // Gets set to 'true' when a checkpoint is activated. A checkpoint cannot be set as the main checkpoint twice.
         public bool activated = false;
 
@@ -48,8 +51,11 @@ namespace mbs
         // Sets this as the most recent checkpoint.
         public void ActivateCheckpoint()
         {
+            GameplayManager gm = GameplayManager.Instance;
+
             activated = true;
-            GameplayManager.Instance.setCheckpoint = this;
+            gm.setCheckpoint = this;
+            playerMode = gm.player.MovementMode;
         }
 
         // Gets the respawn position.
@@ -64,6 +70,22 @@ namespace mbs
         {
             // Move to respawn position.
             entity.transform.position = GetRespawnPosition();
+
+            // The player component.
+            Player player;
+
+            // Tries to grab the player component.
+            if(entity.TryGetComponent(out player))
+            {
+                // Resets the player's velocity.
+                player.physicsBody.velocity = Vector3.zero;
+
+                // Has the player face the same direction of the checkpoint.
+                player.transform.forward = transform.forward;
+
+                // Set the player's movement mode.
+                player.MovementMode = playerMode;
+            }
 
             // Checks if the camera is set.
             if(vcam != null)
@@ -94,10 +116,10 @@ namespace mbs
 
         }
 
-        // Update is called once per frame
-        void Update()
-        {
+        //// Update is called once per frame
+        //void Update()
+        //{
 
-        }
+        //}
     }
 }

@@ -7,6 +7,7 @@ TagManager:
   - Ground
   - Rail
   - Manager
+  - Checkpoint
   layers:
   - Default
   - TransparentFX

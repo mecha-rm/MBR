@@ -12,7 +12,7 @@ namespace mbs
     public class GameplayManager : MonoBehaviour
     {
         // The instancce of the GameplayManager.
-        public static GameplayManager instance;
+        private static GameplayManager instance;
 
         // Used to initialize the singleton.
         private bool initialized = false;
