@@ -43,6 +43,10 @@ namespace mbs
         // The rail rider script.
         public RailRider railRider;
 
+
+        // The limit on the player's velocity.
+        public float maxVelocity = 1000.0F;
+
         [Header("Input")]
 
         // Enables/disables user inputs.
@@ -57,6 +61,11 @@ namespace mbs
         // The player's move speed when they rotate.
         // private float rotMoveSpeed = 8.0F; // TODO: make public when finished.
 
+        [Header("Input/Jump")]
+
+        // The jump key.
+        public KeyCode jumpKey = KeyCode.Space;
+
         // The player's jump power.
         public float jumpPower = 10.0F; // TODO: make public when finished.
 
@@ -69,7 +78,23 @@ namespace mbs
         // // The up vector of the player (TODO: address)
         // private Vector3 playerUp = Vector3.up;
 
-        [Header("Input/Locks")]
+        [Header("Input/Dash")]
+
+        // The dash key.
+        public KeyCode dashKey = KeyCode.H;
+
+        // The power of the player's dash.
+        public float dashPower = 10.0F;
+
+        // The dash cooldown timer.
+        public float dashCooldownTimer = 0.0F;
+
+        // The dash cooldown timer's max.
+        public float dashCooldownTimerMax = 1.5F;
+
+
+        [Header("Input/Other")]
+
         // Unlocks movement for the player after this timer is set to 0 (time in seconds). This does NOT use inputEnabled.
         // This timer won't go down if inputsEnabled is false.
         public float inputUnlockTimer = 0.0F;
@@ -258,7 +283,7 @@ namespace mbs
 
             // Need to set it up this way for GetKeyDown for jumping.
             // float jump = Input.GetAxisRaw("Jump"); // Old
-            float jump = Input.GetKeyDown(KeyCode.Space) ? 1.0F : 0.0F; // New
+            float jump = Input.GetKeyDown(jumpKey) ? 1.0F : 0.0F; // New
 
             // NOTE: you need to account for applying force when on slopes. Maybe have a box that's used to...
             // Define how the forces are applied, and have a sphere on the inside that actually rotates...
@@ -368,7 +393,7 @@ namespace mbs
 
             // Jump
             // if (canJump && Input.GetKeyDown(KeyCode.Space))
-            if (canJump && Input.GetKeyDown(KeyCode.Space)) // Player can jump.
+            if (canJump && Input.GetKeyDown(jumpKey)) // Player can jump.
             {
                 // If the player should jump.
                 if (jump != 0.0F)
@@ -397,6 +422,72 @@ namespace mbs
                     // Don't follow the player.
                     SetCameraTrackPlayerY(false);
                 }
+            }
+
+
+            // Dash
+            // Checks if the player is allowed to dash.
+            if(dashCooldownTimer <= 0.0F)
+            {
+                // The dash key.
+                if(Input.GetKeyDown(dashKey))
+                {
+                    // The dash direction.
+                    Vector3 direc = Vector3.zero;
+
+                    // Horizontal input is set.
+                    if(hori != 0.0F)
+                    {
+                        // Add horizontal movement.
+                        switch(moveMode)
+                        {
+                            case MoveMode.fourWay: // Four-directional.
+                                direc += Vector3.right * (hori >= 0.0F ? 1.0F : -1.0F);
+                                break;
+
+                            case MoveMode.xy2d: // X-Forward
+                                direc += Vector3.right * (hori >= 0.0F ? 1.0F : -1.0F);
+                                break;
+
+                            case MoveMode.zy2d: // Z-Forward
+                                direc += Vector3.forward * (hori >= 0.0F ? 1.0F : -1.0F);
+                                break;
+                        }
+                    }
+
+                    // Vertical input is set.
+                    if(vert != 0.0F)
+                    {
+                        // Add vertical movement.
+                        switch (moveMode)
+                        {
+                            case MoveMode.fourWay: // Four-directional.
+                            case MoveMode.forwardOnly: // Forward only.
+                                direc += Vector3.forward * (vert >= 0.0F ? 1.0F : -1.0F);
+                                break;
+                        }
+                    }
+
+                    // If the direction is 0, then go in the direction the player is facing.
+                    if (direc == Vector3.zero)
+                        direc = transform.forward;
+
+
+                    // Apply force to hte physics body.
+                    physicsBody.AddForce(direc * dashPower, ForceMode.Impulse);
+
+                    // Return timer to max.
+                    dashCooldownTimer = dashCooldownTimerMax;
+                }
+            }
+            else
+            {
+                // Reduce timer.
+                dashCooldownTimer -= Time.deltaTime;
+
+                // Bounds.
+                if (dashCooldownTimer <= 0)
+                    dashCooldownTimer = 0.0F;
             }
 
 
@@ -465,6 +556,10 @@ namespace mbs
                         
                 }
             }
+
+            // Clamps the velocity of the physics body.
+            if (physicsBody.velocity.magnitude > Mathf.Abs(maxVelocity))
+                physicsBody.velocity = Vector3.ClampMagnitude(physicsBody.velocity, maxVelocity);
 
             // Updates the model's angular velocity.
             if(autoUpdateModel)

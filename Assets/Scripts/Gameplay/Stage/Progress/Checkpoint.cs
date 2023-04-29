@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace mbs
 {
-    // A checkpoint for respawning the player.
+    // A checkpoint for respawning the player. Make sure the player has the Player tag so that it can be activated.
     public class Checkpoint : MonoBehaviour
     {
         // The offset from the checkpoint's position, which is used as the respawn point.
@@ -26,6 +26,7 @@ namespace mbs
 
         }
 
+        // OnCollisionEnter
         private void OnCollisionEnter(Collision collision)
         {
             // Save this as the most recent checkpoint if it hasn't been activated yet.
@@ -37,6 +38,7 @@ namespace mbs
             }
         }
 
+        // OnTriggerEnter
         private void OnTriggerEnter(Collider other)
         {
             // Save this as the most recent checkpoint if it hasn't been activated yet.

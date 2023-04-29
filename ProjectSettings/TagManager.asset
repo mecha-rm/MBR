@@ -8,6 +8,7 @@ TagManager:
   - Rail
   - Manager
   - Checkpoint
+  - Portal
   layers:
   - Default
   - TransparentFX

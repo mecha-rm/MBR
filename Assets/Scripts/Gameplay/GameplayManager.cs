@@ -115,7 +115,7 @@ namespace mbs
         private void Initialize()
         {
             // Loads the stage.
-            if(loadStage)
+            if (loadStage)
             {
                 // Finds the stage start object.
                 StageStart start = FindObjectOfType<StageStart>();
@@ -140,7 +140,7 @@ namespace mbs
                     SceneManager.LoadScene(start.stageScene, LoadSceneMode.Additive);
 
                     // Destoys all the default assets.
-                    if(defaultAssets != null)
+                    if (defaultAssets != null)
                         Destroy(defaultAssets);
                 }
             }
@@ -152,7 +152,7 @@ namespace mbs
             GoalSpawn goalSpawn = FindObjectOfType<GoalSpawn>(true);
 
             // Player spawn found.
-            if(playerSpawn != null)
+            if (playerSpawn != null)
             {
                 // Gets the player transform for the stage.
                 player.transform.position = playerSpawn.transform.position;
@@ -169,6 +169,20 @@ namespace mbs
             }
 
             // ... Do more.
+        }
+
+        // Switches over to the provided camera.
+        public void SetVirtualCamera(CinemachineVirtualCamera newVcam)
+        {
+            // Turns off the active camera.
+            if (activeVcam != null)
+                activeVcam.gameObject.SetActive(false);
+
+            // Makes sure the new virtual camera is active.
+            newVcam.gameObject.SetActive(true);
+
+            // Save the new virtual camera.
+            activeVcam = newVcam;
         }
 
         // Called when an object has reached the death plane.
