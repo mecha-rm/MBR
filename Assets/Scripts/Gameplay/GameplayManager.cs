@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -25,11 +26,24 @@ namespace mbs
         // The player for the game.
         public Player player;
 
+        // The active virtual camera.
+        public CinemachineVirtualCamera activeVcam;
+
+        [Header("Progress")]
+
         // The finish area of the game.
         public Goal goal;
 
+        // The checkpoint that the player respawns at.
+        public Checkpoint setCheckpoint = null;
+
+        // TODO: implement checkpoint and make sure to give it the respawn camera.
+
         // A parent object that contains all the debug assets. If a level is loaded successfully, the object is deleted.
         public GameObject defaultAssets;
+
+        // The y-value of the death plane. Anything below this plane is considered 'dead', and thus will be destroyed.
+        public float deathPlaneY = -30.0F;
 
         [Header("Timer")]
 
@@ -72,6 +86,9 @@ namespace mbs
             if (goal == null)
                 goal = FindObjectOfType<Goal>();
 
+            // Finds the active virtual camera.
+            if (activeVcam == null)
+                activeVcam = FindObjectOfType<CinemachineVirtualCamera>(false);
 
             // Initializes the game.
             Initialize();
@@ -152,6 +169,36 @@ namespace mbs
             }
 
             // ... Do more.
+        }
+
+        // Called when an object has reached the death plane.
+        public void OnDeathPlaneReached(GameObject entity)
+        {
+            // The entity is a player.
+            if(entity.tag == "Player")
+            {
+                Player p;
+
+                // Grab the player component.
+                if(entity.TryGetComponent(out p))
+                {
+                    // Cancel the velocity.
+                    p.physicsBody.velocity = Vector3.zero;
+
+                    // TODO: handle cameras.
+
+                    // Put the player at the set checkpoint.
+                    if(setCheckpoint != null)
+                    {
+                        // Return to the respawn position.
+                        setCheckpoint.RespawnAtCheckpoint(p.gameObject, true);
+                    }
+                    else
+                    {
+                        p.transform.position = Vector3.zero;
+                    }
+                }
+            }
         }
 
 

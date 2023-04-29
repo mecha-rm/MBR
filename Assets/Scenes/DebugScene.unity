@@ -309,7 +309,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 324899794}
-  m_LocalRotation: {x: 0.30517742, y: -0.000000016385561, z: 0.0000000052509987, w: 0.95229554}
+  m_LocalRotation: {x: 0.30517742, y: -0.00000001638556, z: 0.0000000052509987, w: 0.95229554}
   m_LocalPosition: {x: 0, y: 6, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1193,7 +1193,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.30517742, y: -0.000000016385561, z: 0.0000000052509987, w: 0.95229554}
+  m_LocalRotation: {x: 0.30517742, y: -0.00000001638556, z: 0.0000000052509987, w: 0.95229554}
   m_LocalPosition: {x: 0, y: 6, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1530,14 +1530,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3b6d1b576eac464aad286651e3e50bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
-  loopPoints: 0
   waypoints:
   - {fileID: 584932504}
   - {fileID: 995529501}
   - {fileID: 585273448}
   - {fileID: 1557398137}
   riders: []
+  mode: 0
+  speed: 10
+  samples: 11
+  launchPower: 1
+  loopRail: 0
 --- !u!65 &1327177168
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2959,6 +2962,7 @@ GameObject:
   - component: {fileID: 2082171574}
   - component: {fileID: 2082171573}
   - component: {fileID: 2082171578}
+  - component: {fileID: 2082171579}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -3048,6 +3052,20 @@ MonoBehaviour:
   endPoint: {fileID: 0}
   speed: 1
   rigidbody: {fileID: 0}
+--- !u!114 &2082171579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2082171572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a830f90eef337754d8162dc160a45c02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
+  destroyOnTriggered: 0
 --- !u!1 &2105450218
 GameObject:
   m_ObjectHideFlags: 3
@@ -3189,7 +3207,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loadStage: 0
   player: {fileID: 0}
+  playerDeathRespawn: {x: 0, y: 0, z: 0}
   goal: {fileID: 0}
   defaultAssets: {fileID: 0}
+  deathPlaneY: -30
   timer: 0
   pausedTimer: 0

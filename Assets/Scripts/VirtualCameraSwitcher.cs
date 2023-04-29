@@ -82,6 +82,7 @@ namespace mbs
         // Switch the cameras.
         public void SwitchCameras()
         {
+            // The active parameter.
             bool active;
             
             // If active should be set.
@@ -90,14 +91,21 @@ namespace mbs
                 active = !vcam1.gameObject.activeSelf;
                 vcam1.gameObject.SetActive(active);
                 vcam2.gameObject.SetActive(!active);
+
+
+                // Set the active camera.
+                GameplayManager.Instance.activeVcam = (vcam1.gameObject.activeSelf) ? vcam1 : vcam2;
             }
             else // Change component.
             {
                 active = !vcam1.enabled;
                 vcam1.enabled = active;
                 vcam2.enabled = !active;
+
+                // Set the active camera.
+                GameplayManager.Instance.activeVcam = (vcam1.enabled) ? vcam1 : vcam2;
             }
-       
+      
         }
     }
 }
