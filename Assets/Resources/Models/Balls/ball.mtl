@@ -1,0 +1,12 @@
+# Blender 3.3.0 MTL File: 'MBR - Stage Assets - General.blend'
+# www.blender.org
+
+newmtl Ball_Material_-_Star_-_Red
+Ns 250.000000
+Ka 0.300000 0.300000 0.300000
+Ks 0.600000 0.600000 0.600000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd ball_-_texture_-_stars_-_red.png
