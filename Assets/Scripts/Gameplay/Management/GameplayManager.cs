@@ -26,6 +26,9 @@ namespace mbs
         // The player for the game.
         public Player player;
 
+        // The player's spawn point.
+        public PlayerSpawn playerSpawn;
+
         // The active virtual camera.
         public CinemachineVirtualCamera activeVcam;
 
@@ -33,6 +36,9 @@ namespace mbs
 
         // The finish area of the game.
         public Goal goal;
+
+        // The goal spawn point.
+        public GoalSpawn goalSpawn;
 
         // The checkpoint that the player respawns at.
         public Checkpoint setCheckpoint = null;
@@ -148,8 +154,50 @@ namespace mbs
 
             // Spawn Transforms
             // Finds the player and goal spawn.
-            PlayerSpawn playerSpawn = FindObjectOfType<PlayerSpawn>(true);
-            GoalSpawn goalSpawn = FindObjectOfType<GoalSpawn>(true);
+            playerSpawn = FindObjectOfType<PlayerSpawn>(true);
+            goalSpawn = FindObjectOfType<GoalSpawn>(true);
+
+            // TODO: for some reason, FindObjectOfType doesn't consider objects from the scene loaded additively.
+            // It doesn't work in the Update() either, meaning that this isn't an issue with calling it from Start().
+            // In order for this to work, I'm using FindGameObjectsWithTag, which does work for some reason.
+            // See if there's a better way to do this.
+
+            // If either of the spawns are set to null.
+            if(playerSpawn == null || goalSpawn == null)
+            {
+                // Grabs the spawns.
+                GameObject[] spawns = GameObject.FindGameObjectsWithTag("Spawn");
+
+                // Player spawn is set to null.
+                if (playerSpawn == null)
+                {
+                    // Tries to find the player spawn.
+                    foreach(GameObject spawn in spawns)
+                    {
+                        if (spawn.TryGetComponent(out playerSpawn))
+                            break;
+                    }
+                }
+
+                // Goal spawn is set to null.
+                if(goalSpawn == null)
+                {
+                    // Tries to find the goal spawn.
+                    foreach (GameObject spawn in spawns)
+                    {
+                        if (spawn.TryGetComponent(out goalSpawn))
+                            break;
+                    }
+                }
+                
+            }
+
+
+
+            if(goalSpawn == null)
+            {
+
+            }
 
             // Player spawn found.
             if (playerSpawn != null)
