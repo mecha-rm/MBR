@@ -901,7 +901,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   respawnOffset: {x: 0, y: 0, z: 0}
-  vcam: {fileID: 0}
+  vcam: {fileID: 324899795}
   activated: 0
 --- !u!1 &963194225
 GameObject:
@@ -3126,10 +3126,6 @@ PrefabInstance:
     - target: {fileID: 2534098489936558515, guid: 9554ca5fbec140b4999023341cc6c1d4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2534098489936558525, guid: 9554ca5fbec140b4999023341cc6c1d4, type: 3}
-      propertyPath: m_Drag
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2534098489936558526, guid: 9554ca5fbec140b4999023341cc6c1d4, type: 3}
       propertyPath: cameraTarget

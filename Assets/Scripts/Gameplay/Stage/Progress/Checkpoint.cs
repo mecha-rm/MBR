@@ -109,6 +109,8 @@ namespace mbs
                     currVcam.gameObject.SetActive(false);
                 }
 
+                // TODO: have the camera transition instantly when it moves back.
+
                 // Turns on the checkpoint's camera.
                 vcam.gameObject.SetActive(true);
 

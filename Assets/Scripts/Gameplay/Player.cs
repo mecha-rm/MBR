@@ -51,7 +51,7 @@ namespace mbs
         public bool inputsEnabled = true;
 
         // The player's movement speed.
-        private float moveSpeed = 20.0F; // TODO: make public when finished.
+        private float moveSpeed = 30.0F; // TODO: make public when finished.
 
         // The player's rotation incrementer (in degrees).
         private float rotationInc = 60.0F; // TODO: make public when finished.
@@ -65,7 +65,7 @@ namespace mbs
         public KeyCode jumpKey = KeyCode.Space;
 
         // The player's jump power.
-        public float jumpPower = 10.0F; // TODO: make public when finished.
+        public float jumpPower = 20.0F; // TODO: make public when finished.
 
         // If the player can jump.
         private bool canJump = true;
@@ -459,47 +459,45 @@ namespace mbs
                 // The dash key.
                 if(Input.GetKeyDown(dashKey))
                 {
+                    // TODO: you should rewrite this.
+
                     // The dash direction.
                     Vector3 direc = Vector3.zero;
-
-                    // Right and Forward
-                    Vector3 right = Vector3.right;
-                    Vector3 forward = Vector3.forward;
-
-                    // Sets the axis direction based on movement mode.
-                    switch (moveMode)
-                    {
-                        case MovementMode.fourWayWorld: // ALL Directional (World)
-                            right = Vector3.right;
-                            break;
-
-                        case MovementMode.fourWayCam: // All Directional (Cam)
-                            right = cameraTarget.transform.right;
-                            break;
-
-                        case MovementMode.xy2dWorld: // X-Forward (World)
-                            right = Vector3.right;
-                            break;
-
-                        case MovementMode.xy2dCam: // X-Forward (Cam)
-                            forward = cameraTarget.transform.right;
-                            break;
-
-                        case MovementMode.zy2dWorld: // Z-Forward (World)
-                            forward = Vector3.forward;
-                            break;
-
-                        case MovementMode.zy2dCam: // Z-Forward (Cam)
-                            forward = cameraTarget.transform.forward;
-                            break;
-                    }
-
 
                     // Horizontal input is set.
                     if (hori != 0.0F)
                     {
-                        
+                        // Right and Forward
+                        Vector3 right = Vector3.right;
+                        Vector3 forward = Vector3.forward;
 
+                        // Sets the axis direction based on movement mode.
+                        switch (moveMode)
+                        {
+                            case MovementMode.fourWayWorld: // ALL Directional (World)
+                                right = Vector3.right;
+                                break;
+
+                            case MovementMode.fourWayCam: // All Directional (Cam)
+                                right = cameraTarget.transform.right;
+                                break;
+
+                            case MovementMode.xy2dWorld: // X-Forward (World)
+                                right = Vector3.right;
+                                break;
+
+                            case MovementMode.xy2dCam: // X-Forward (Cam)
+                                forward = cameraTarget.transform.right;
+                                break;
+
+                            case MovementMode.zy2dWorld: // Z-Forward (World)
+                                forward = Vector3.forward;
+                                break;
+
+                            case MovementMode.zy2dCam: // Z-Forward (Cam)
+                                forward = cameraTarget.transform.forward;
+                                break;
+                        }
 
                         // Add horizontal movement.
                         switch (moveMode)
@@ -513,7 +511,7 @@ namespace mbs
 
                             case MovementMode.zy2dWorld: // Z-Forward (World)
                             case MovementMode.zy2dCam: // Z-Forward (Cam)
-                                direc += Vector3.forward * (hori >= 0.0F ? 1.0F : -1.0F);
+                                direc += forward * (hori >= 0.0F ? 1.0F : -1.0F);
                                 break;
                         }
                     }
@@ -521,23 +519,43 @@ namespace mbs
                     // Vertical input is set.
                     if(vert != 0.0F)
                     {
+                        Vector3 forward = Vector3.forward;
+
                         // Add vertical movement.
                         switch (moveMode)
                         {
-                            case MovementMode.fourWayWorld: // Four-directional.
+                            case MovementMode.fourWayWorld: // Four-directional (based on world).
+                                forward = Vector3.forward;
+                                break;
+
+                            case MovementMode.fourWayCam: // Four-directional (based on camera).
                             case MovementMode.forwardOnly: // Forward only.
-                                direc += Vector3.forward * (vert >= 0.0F ? 1.0F : -1.0F);
+                                forward = cameraTarget.transform.forward;
+                                break;
+                        }
+
+                        // Add vertical movement.
+                        switch (moveMode)
+                        {
+                            case MovementMode.fourWayWorld: // Four-directional (based on world).
+                            case MovementMode.fourWayCam: // Four-directional (based on camera).
+                            case MovementMode.forwardOnly: // Forward only.
+                                direc += forward * (vert >= 0.0F ? 1.0F : -1.0F);
                                 break;
                         }
                     }
 
-                    // If the direction is 0, then go in the direction the player is facing.
-                    if (direc == Vector3.zero)
-                        direc = transform.forward;
 
+
+                    // If the direction is 0, then go in the direction the player is already moving.
+                    if (direc == Vector3.zero)
+                    {
+                        direc = rigidbody.velocity.normalized;
+                    }
+                        
 
                     // Apply force to hte physics body.
-                    rigidbody.AddForce(direc * dashPower, ForceMode.Impulse);
+                    rigidbody.AddForce(direc.normalized * dashPower, ForceMode.Impulse);
 
                     // Return timer to max.
                     dashCooldownTimer = dashCooldownTimerMax;
