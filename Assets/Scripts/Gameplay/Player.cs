@@ -1,4 +1,5 @@
 using Cinemachine;
+using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,15 +15,18 @@ namespace mbs
         // TODO: add mode for going four-way relative to the camera position.
         // Movement modes
         /*
-         * fourWay: full directional movement
+         * fourWay: full directional movement relative to the world transform.
+         * fourWayCam: full directional movement relative to the camera target.
          * forwardOnly: forward and back movement with rotation on horizontal.
-         * xy2d: move on a 2D plane (XY). Make sure to disable the unused axis.
-         * zy2d: move on a 2D plane (ZY). Make sure to disable the unused axis.
+         * xy2dWorld: move on a 2D plane (XY) relative to the world axis. Make sure to disable the unused axis.
+         * xy2dCam: move on a 2D plane (XY) relative to the camera target. Make sure to disable the unused axis.
+         * zy2dWorld: move on a 2D plane (ZY) relative to the world axis. Make sure to disable the unused axis.
+         * zy2dCam: move on a 2D plane (ZY) relative to the camera target. Make sure to disable the unused axis.
          */
-        public enum MoveMode { fourWay, forwardOnly, xy2d, zy2d }
+        public enum MovementMode { fourWayWorld, fourWayCam, forwardOnly, xy2dWorld, xy2dCam, zy2dWorld, zy2dCam }
 
         // The player's movement mode - this is used for testing purposes, and should likely be removed later.
-        private MoveMode moveMode = MoveMode.fourWay;
+        private MovementMode moveMode = MovementMode.fourWayCam;
 
         // The player's rigidbody.
         // Freeze the y-position. The y-position is manually set by the user.
@@ -119,6 +123,9 @@ namespace mbs
                 railRider.OnDetachFromRailAddCallback(OnDetachFromRail);
                 railRider.OnPositionUpdatedAddCallback(OnRailPositionUpdated);
             }
+
+            // Update the movement mode.
+            SetMovementMode(moveMode);
         }
 
         // OnCollisionEnter is called when a collider/rigidbody has begun touching another collider/rigidbody.
@@ -193,50 +200,58 @@ namespace mbs
             //}
         }
 
-        // Gets the player's movement mode.
-        // TODO: change this to a setter and getter instead?
-        public MoveMode MovementMode
+        // Gets the movement mode.
+        public MovementMode GetMovementMode()
         {
-            get 
-            { 
-                return moveMode; 
-            }
+            return moveMode;
+        }
 
-            set
+
+        // Sets the movement mode.
+        public void SetMovementMode(MovementMode newMode)
+        {
+            // Sets the new movement mode.
+            moveMode = newMode;
+
+            // Sets rigidbody constraints based on the mode being set.
+
+            // Removing this since the ball should rotate properly.
+            // Checks if the new move mode is 2D or 3D.
+            switch (moveMode)
             {
-                // Sets the new movement mode.
-                moveMode = value;
+                // 3D movement.
+                case MovementMode.fourWayWorld:
+                case MovementMode.fourWayCam:
+                case MovementMode.forwardOnly:
 
-                // The rigidbody constaints.
+                    // Allow all axes of movement.
+                    rigidbody.constraints = RigidbodyConstraints.None;
+                    // rigidbody.constraints = RigidbodyConstraints.FreezeRotation; // No longer needed.
+                    break;
 
+                // 2d movement (world and cam) - XY
+                case MovementMode.xy2dWorld: 
+                case MovementMode.xy2dCam:
+                    // Frozen on z-axis position (no longer freezes on rotation).
 
-                // Removing this since the ball should rotate properly.
-                //// Checks if the new move mode is 2D or 3D.
-                //switch (moveMode)
-                //{
-                //    // 3D movement.
-                //    case MoveMode.fourWay:
-                //    case MoveMode.forwardOnly:
+                    rigidbody.constraints = RigidbodyConstraints.None;
+                    // rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation; // Old
+                    rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
+                    break;
 
-                //        // Allow all axes of movement, and then freezes the rotation.
-                //        rigidbody.constraints = RigidbodyConstraints.None;
-                //        rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
-                //        break;
+                // 2d movement 9world and cam) - ZY
+                case MovementMode.zy2dWorld:
+                case MovementMode.zy2dCam:
+                    // frozen on x-axis (no longer freezes on rotation).
 
-                //    // 2d movement.
-                //    case MoveMode.xy2d: // frozen on z-axis.
-                //        rigidbody.constraints = RigidbodyConstraints.None;
-                //        rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
-                //        break;
+                    rigidbody.constraints = RigidbodyConstraints.None;
+                    // rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotation; // Old
+                    rigidbody.constraints = RigidbodyConstraints.FreezePositionX;
+                    break;
 
-                //    case MoveMode.zy2d: // frozen on x-axis.
-                //        rigidbody.constraints = RigidbodyConstraints.None;
-                //        rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotation;
-                //        break;
-
-                //}
             }
         }
+
 
         // Called when attaching to a rail.
         private void OnAttachToRail(Rail rail, RailRider rider)
@@ -283,7 +298,7 @@ namespace mbs
 
                 switch (moveMode)
                 {
-                    case MoveMode.fourWay: // Four-way movement.
+                    case MovementMode.fourWayWorld: // Four-way movement (world)
 
                         // Movement
                         // Vector3 direc = (playerCamera != null) ? playerCamera.transform.right : transform.right; // Original
@@ -294,8 +309,16 @@ namespace mbs
                         // Vector3 direc = (followerCamera != null) ? followerCamera.transform.forward: transform.forward; // New
                         // rigidBody.AddForce(direc * rotMoveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // New
                         break;
-                    
-                    case MoveMode.forwardOnly: // Forward movement only.
+
+
+                    case MovementMode.fourWayCam: // Four-way movement (camera)
+                        // Movement
+                        direc = cameraTarget.transform.right;
+                        rigidbody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Original
+
+                        break;
+
+                    case MovementMode.forwardOnly: // Forward movement only.
                         // Rotation
                         float rotAngle = rotationInc * hori * Time.deltaTime;
 
@@ -307,15 +330,28 @@ namespace mbs
 
                         break;
 
-                    case MoveMode.xy2d: // 2D Movement (XY)
+                    case MovementMode.xy2dWorld: // 2D Movement (XY) - World
                         
                         direc = Vector3.right;
                         rigidbody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Move on the x-axis.
 
                         break;
 
-                    case MoveMode.zy2d: // 2D Movement (ZY)
+                    case MovementMode.xy2dCam: // 2D Movement (XY) - Camera Target
+
+                        direc = cameraTarget.transform.right;
+                        rigidbody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Move on the x-axis.
+
+                        break;
+
+                    case MovementMode.zy2dWorld: // 2D Movement (ZY) - World
                         direc = Vector3.forward; // Forward
+                        rigidbody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Move on the z-axis.
+
+                        break;
+
+                    case MovementMode.zy2dCam: // 2D Movement (ZY) - Camera Target
+                        direc = cameraTarget.transform.forward; // Forward
                         rigidbody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Move on the z-axis.
 
                         break;
@@ -335,11 +371,12 @@ namespace mbs
                 // Changes how direction is calculated.
                 switch (moveMode)
                 {
-                    case MoveMode.fourWay: // All directional movement.
+                    case MovementMode.fourWayWorld: // All directional movement (camera).
                         direc = Vector3.forward;
                         break;
 
-                    case MoveMode.forwardOnly: // Forward movement only.
+                    case MovementMode.fourWayCam: // All directional movement (camera).
+                    case MovementMode.forwardOnly: // Forward movement only.
                         direc = cameraTarget.transform.forward;
                         break;
                 }
@@ -347,8 +384,9 @@ namespace mbs
                 // Applies Force
                 switch (moveMode)
                 {
-                    case MoveMode.fourWay: // All directional movement.
-                    case MoveMode.forwardOnly: // Forward movement only.
+                    case MovementMode.fourWayWorld: // All directional movement.
+                    case MovementMode.fourWayCam:
+                    case MovementMode.forwardOnly: // Forward movement only.
                         // Old
                         // Vector3 direc = (followerCamera != null) ? followerCamera.transform.forward : transform.forward;
 
@@ -424,21 +462,57 @@ namespace mbs
                     // The dash direction.
                     Vector3 direc = Vector3.zero;
 
-                    // Horizontal input is set.
-                    if(hori != 0.0F)
+                    // Right and Forward
+                    Vector3 right = Vector3.right;
+                    Vector3 forward = Vector3.forward;
+
+                    // Sets the axis direction based on movement mode.
+                    switch (moveMode)
                     {
+                        case MovementMode.fourWayWorld: // ALL Directional (World)
+                            right = Vector3.right;
+                            break;
+
+                        case MovementMode.fourWayCam: // All Directional (Cam)
+                            right = cameraTarget.transform.right;
+                            break;
+
+                        case MovementMode.xy2dWorld: // X-Forward (World)
+                            right = Vector3.right;
+                            break;
+
+                        case MovementMode.xy2dCam: // X-Forward (Cam)
+                            forward = cameraTarget.transform.right;
+                            break;
+
+                        case MovementMode.zy2dWorld: // Z-Forward (World)
+                            forward = Vector3.forward;
+                            break;
+
+                        case MovementMode.zy2dCam: // Z-Forward (Cam)
+                            forward = cameraTarget.transform.forward;
+                            break;
+                    }
+
+
+                    // Horizontal input is set.
+                    if (hori != 0.0F)
+                    {
+                        
+
+
                         // Add horizontal movement.
-                        switch(moveMode)
+                        switch (moveMode)
                         {
-                            case MoveMode.fourWay: // Four-directional.
-                                direc += Vector3.right * (hori >= 0.0F ? 1.0F : -1.0F);
+                            case MovementMode.fourWayWorld: // Four-directional (World)
+                            case MovementMode.fourWayCam: // Four-directional (Cam)
+                            case MovementMode.xy2dWorld: // X-Forward (World)
+                            case MovementMode.xy2dCam: // X-Forward (Cam)
+                                direc += right * (hori >= 0.0F ? 1.0F : -1.0F);
                                 break;
 
-                            case MoveMode.xy2d: // X-Forward
-                                direc += Vector3.right * (hori >= 0.0F ? 1.0F : -1.0F);
-                                break;
-
-                            case MoveMode.zy2d: // Z-Forward
+                            case MovementMode.zy2dWorld: // Z-Forward (World)
+                            case MovementMode.zy2dCam: // Z-Forward (Cam)
                                 direc += Vector3.forward * (hori >= 0.0F ? 1.0F : -1.0F);
                                 break;
                         }
@@ -450,8 +524,8 @@ namespace mbs
                         // Add vertical movement.
                         switch (moveMode)
                         {
-                            case MoveMode.fourWay: // Four-directional.
-                            case MoveMode.forwardOnly: // Forward only.
+                            case MovementMode.fourWayWorld: // Four-directional.
+                            case MovementMode.forwardOnly: // Forward only.
                                 direc += Vector3.forward * (vert >= 0.0F ? 1.0F : -1.0F);
                                 break;
                         }

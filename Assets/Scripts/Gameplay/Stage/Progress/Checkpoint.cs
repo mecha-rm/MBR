@@ -15,7 +15,7 @@ namespace mbs
         public CinemachineVirtualCamera vcam;
 
         // The movement mode of the player when they hit the checkpoint.
-        private Player.MoveMode playerMode;
+        private Player.MovementMode playerMode;
 
         // Gets set to 'true' when a checkpoint is activated. A checkpoint cannot be set as the main checkpoint twice.
         public bool activated = false;
@@ -57,7 +57,7 @@ namespace mbs
 
             activated = true;
             gm.setCheckpoint = this;
-            playerMode = gm.player.MovementMode;
+            playerMode = gm.player.GetMovementMode();
         }
 
         // Gets the respawn position.
@@ -86,7 +86,7 @@ namespace mbs
                 player.transform.forward = transform.forward;
 
                 // Set the player's movement mode.
-                player.MovementMode = playerMode;
+                player.SetMovementMode(playerMode);
             }
 
             // Checks if the camera is set.

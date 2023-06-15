@@ -97,13 +97,13 @@ namespace mbs
 
 
             // Adds force to the physics body and model body.
-            switch(player.MovementMode)
+            switch(player.GetMovementMode())
             {
-                case Player.MoveMode.fourWay: // Four-way directional movement.
+                case Player.MovementMode.fourWayWorld: // Four-way directional movement.
                     // No rotation.
                     break;
 
-                case Player.MoveMode.forwardOnly: // Forward only.
+                case Player.MovementMode.forwardOnly: // Forward only.
                     player.transform.forward = direc; // Has the player face the direction of movement.
 
                     // The player can only rotate on the y-axis.
