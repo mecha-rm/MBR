@@ -77,22 +77,22 @@ namespace mbs
             {
                 // If the player isn't moving, they go in the direction they're facing.
                 // If the player is moving, they go in their direction of movement.
-                direc = (player.physicsBody.velocity == Vector3.zero) ? 
-                    player.transform.forward : player.physicsBody.velocity.normalized;
+                direc = (player.rigidbody.velocity == Vector3.zero) ? 
+                    player.transform.forward : player.rigidbody.velocity.normalized;
             }
 
             // Zeroes out the velocity.
             if (fixedVelocity)
             {
                 // Reset physics body.
-                player.physicsBody.velocity = Vector3.zero;
-                player.physicsBody.angularVelocity = Vector3.zero;
+                player.rigidbody.velocity = Vector3.zero;
+                player.rigidbody.angularVelocity = Vector3.zero;
             }
 
             // Disables the player's gravity.
             if (disableGravity)
             {
-                player.physicsBody.useGravity = false;
+                player.rigidbody.useGravity = false;
             }
 
 
@@ -113,7 +113,7 @@ namespace mbs
 
 
             // Add force.
-            player.physicsBody.AddForce(direc * power, ForceMode.VelocityChange);
+            player.rigidbody.AddForce(direc * power, ForceMode.VelocityChange);
 
             // If the player's position should be set.
             if(setPlayerPos)
@@ -125,10 +125,6 @@ namespace mbs
             // Locks player input for the set time.
             if(lockPlayerControls)
                 player.inputUnlockTimer = lockTime;
-
-
-            // Updates the angular (rotation) velocity of the model.
-            player.UpdateModelAngularVelocity();
         }
 
         // Update is called once per frame

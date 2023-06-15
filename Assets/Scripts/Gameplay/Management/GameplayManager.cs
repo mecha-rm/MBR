@@ -225,7 +225,7 @@ namespace mbs
                 if(entity.TryGetComponent(out p))
                 {
                     // Cancel the velocity.
-                    p.physicsBody.velocity = Vector3.zero;
+                    p.rigidbody.velocity = Vector3.zero;
 
                     // TODO: handle cameras.
 

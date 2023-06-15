@@ -51,7 +51,7 @@ MonoBehaviour:
   copyPositionY: 1
   copyPositionZ: 1
   copyRotationX: 0
-  copyRotationY: 1
+  copyRotationY: 0
   copyRotationZ: 0
   copyScaleX: 1
   copyScaleY: 1

@@ -80,7 +80,7 @@ namespace mbs
             if(entity.TryGetComponent(out player))
             {
                 // Resets the player's velocity.
-                player.physicsBody.velocity = Vector3.zero;
+                player.rigidbody.velocity = Vector3.zero;
 
                 // Has the player face the same direction of the checkpoint.
                 player.transform.forward = transform.forward;

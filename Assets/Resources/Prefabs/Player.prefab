@@ -44,7 +44,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2534098489936558527}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 5419bf48d642e804d8230455e5d955e4, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -64,7 +64,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!114 &2534098489936558526
 MonoBehaviour:
@@ -78,9 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fdc634c3eba70b4181c72a943f1772c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  physicsBody: {fileID: 2534098489936558525}
-  modelBody: {fileID: 2534098487826179741}
-  autoUpdateModel: 1
+  rigidbody: {fileID: 0}
   cameraTarget: {fileID: 0}
   railRider: {fileID: 0}
   maxVelocity: 1000
@@ -201,24 +199,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5b169154113f77a4ca08bb20fbaa0429, type: 3}
   m_PrefabInstance: {fileID: 2534098487826179736}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &3452999739538594761 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 5b169154113f77a4ca08bb20fbaa0429, type: 3}
-  m_PrefabInstance: {fileID: 2534098487826179736}
-  m_PrefabAsset: {fileID: 0}
---- !u!54 &2534098487826179741
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3452999739538594761}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 14
-  m_CollisionDetection: 0

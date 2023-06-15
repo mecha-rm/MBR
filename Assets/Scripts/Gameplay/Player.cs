@@ -11,6 +11,7 @@ namespace mbs
         // The player tag.
         public static string PLAYER_TAG = "Player";
 
+        // TODO: add mode for going four-way relative to the camera position.
         // Movement modes
         /*
          * fourWay: full directional movement
@@ -26,14 +27,7 @@ namespace mbs
         // The player's rigidbody.
         // Freeze the y-position. The y-position is manually set by the user.
         // Make sure to freeze the rotation, but leave the position.
-        public Rigidbody physicsBody;
-
-        // The rigidbody of the model, which is used to simulate rotations without effecting player input.
-        // NOTE: make sure to freeze the position, but leave the rotation.
-        public Rigidbody modelBody;
-
-        // Automatically updates the model's rigidbody.
-        public bool autoUpdateModel = true;
+        public new Rigidbody rigidbody;
 
         // The target for virtual cameras.
         // NOTE: if you use this for the virtual camera, make sure damping is set 0 for all pos and rotation.
@@ -103,19 +97,15 @@ namespace mbs
         void Start()
         {
             // Checks if the rigidbody exists.
-            if(physicsBody == null)
+            if(rigidbody == null)
             {
                 // Tries to get the rigidbody.
-                if(!TryGetComponent(out physicsBody))
+                if(!TryGetComponent(out rigidbody))
                 {
                     // Add the rigidbody.
-                    physicsBody = gameObject.AddComponent<Rigidbody>();
+                    rigidbody = gameObject.AddComponent<Rigidbody>();
                 }
             }
-
-            // Tries to get the rigidbody from the children.
-            if (modelBody == null)
-                modelBody = GetComponentInChildren<Rigidbody>();
 
             // Grabs the rail rider.
             if (railRider == null)
@@ -204,6 +194,7 @@ namespace mbs
         }
 
         // Gets the player's movement mode.
+        // TODO: change this to a setter and getter instead?
         public MoveMode MovementMode
         {
             get 
@@ -218,32 +209,32 @@ namespace mbs
 
                 // The rigidbody constaints.
 
-                // TODO: test this.
 
-                // Checks if the new move mode is 2D or 3D.
-                switch (moveMode)
-                {
-                    // 3D movement.
-                    case MoveMode.fourWay:
-                    case MoveMode.forwardOnly:
+                // Removing this since the ball should rotate properly.
+                //// Checks if the new move mode is 2D or 3D.
+                //switch (moveMode)
+                //{
+                //    // 3D movement.
+                //    case MoveMode.fourWay:
+                //    case MoveMode.forwardOnly:
 
-                        // Allow all axes of movement, and then freezes the rotation.
-                        physicsBody.constraints = RigidbodyConstraints.None;
-                        physicsBody.constraints = RigidbodyConstraints.FreezeRotation;
-                        break;
+                //        // Allow all axes of movement, and then freezes the rotation.
+                //        rigidbody.constraints = RigidbodyConstraints.None;
+                //        rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+                //        break;
 
-                    // 2d movement.
-                    case MoveMode.xy2d: // frozen on z-axis.
-                        physicsBody.constraints = RigidbodyConstraints.None;
-                        physicsBody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
-                        break;
+                //    // 2d movement.
+                //    case MoveMode.xy2d: // frozen on z-axis.
+                //        rigidbody.constraints = RigidbodyConstraints.None;
+                //        rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
+                //        break;
 
-                    case MoveMode.zy2d: // frozen on x-axis.
-                        physicsBody.constraints = RigidbodyConstraints.None;
-                        physicsBody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotation;
-                        break;
+                //    case MoveMode.zy2d: // frozen on x-axis.
+                //        rigidbody.constraints = RigidbodyConstraints.None;
+                //        rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotation;
+                //        break;
 
-                }
+                //}
             }
         }
 
@@ -252,17 +243,12 @@ namespace mbs
         {
             canJump = true;
             SetCameraTrackPlayerY(true);
-
-            // Stops updating the model.
-            modelBody.angularVelocity = Vector3.zero;
-            autoUpdateModel = false;
         }
 
         // Called when detaching from a rail.
         private void OnDetachFromRail(Rail rail, RailRider rider)
         {
-            // Starts updating the model again.
-            autoUpdateModel = true;
+            // ...
         }
 
         // Called when changing positions on a rail.
@@ -302,7 +288,7 @@ namespace mbs
                         // Movement
                         // Vector3 direc = (playerCamera != null) ? playerCamera.transform.right : transform.right; // Original
                         direc = Vector3.right;
-                        physicsBody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Original
+                        rigidbody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Original
 
                         // Apply force in the direction.
                         // Vector3 direc = (followerCamera != null) ? followerCamera.transform.forward: transform.forward; // New
@@ -313,21 +299,24 @@ namespace mbs
                         // Rotation
                         float rotAngle = rotationInc * hori * Time.deltaTime;
 
-                        // Rotates the player.
-                        transform.Rotate(Vector3.up, rotAngle);
+                        // Old - rotates the player.
+                        // transform.Rotate(Vector3.up, rotAngle);
+
+                        // New - rotates the camera target.
+                        cameraTarget.transform.Rotate(Vector3.up, rotAngle);
 
                         break;
 
                     case MoveMode.xy2d: // 2D Movement (XY)
                         
                         direc = Vector3.right;
-                        physicsBody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Move on the x-axis.
+                        rigidbody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Move on the x-axis.
 
                         break;
 
                     case MoveMode.zy2d: // 2D Movement (ZY)
                         direc = Vector3.forward; // Forward
-                        physicsBody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Move on the z-axis.
+                        rigidbody.AddForce(direc * moveSpeed * hori * Time.deltaTime, ForceMode.Impulse); // Move on the z-axis.
 
                         break;
 
@@ -351,7 +340,7 @@ namespace mbs
                         break;
 
                     case MoveMode.forwardOnly: // Forward movement only.
-                        direc = transform.forward;
+                        direc = cameraTarget.transform.forward;
                         break;
                 }
                 
@@ -385,7 +374,7 @@ namespace mbs
 
                         // Applies force.
                         Vector3 force = direc * moveSpeed * vert * Time.deltaTime;
-                        physicsBody.AddForce(force, ForceMode.Impulse);
+                        rigidbody.AddForce(force, ForceMode.Impulse);
 
                         break;
                 }
@@ -410,11 +399,11 @@ namespace mbs
                     Vector3 direc = Vector3.up; // New
 
                     // transform.Translate(direc.normalized);
-                    physicsBody.velocity = new Vector3(physicsBody.velocity.x, 0.0F, physicsBody.velocity.z);
+                    rigidbody.velocity = new Vector3(rigidbody.velocity.x, 0.0F, rigidbody.velocity.z);
 
                     // Applies the forces.
                     Vector3 force = direc.normalized * jumpPower * jump;
-                    physicsBody.AddForce(force, ForceMode.Impulse); // Original
+                    rigidbody.AddForce(force, ForceMode.Impulse); // Original
 
                     // The player cannot jump, and their y-position shouldn't be followed.
                     canJump = false;
@@ -474,7 +463,7 @@ namespace mbs
 
 
                     // Apply force to hte physics body.
-                    physicsBody.AddForce(direc * dashPower, ForceMode.Impulse);
+                    rigidbody.AddForce(direc * dashPower, ForceMode.Impulse);
 
                     // Return timer to max.
                     dashCooldownTimer = dashCooldownTimerMax;
@@ -496,30 +485,13 @@ namespace mbs
             {
                 // If the player is descending again, start following their y-position once more.
                 // It also only happens if the rigidbody's velocity is negative or 0 (TODO: may not check velocity).
-                if ((transform.position - posOnJump).y < 0 && physicsBody.velocity.y < 0)
+                if ((transform.position - posOnJump).y < 0 && rigidbody.velocity.y < 0)
                 {
                     SetCameraTrackPlayerY(true);
                 }
                     
             }
                 
-        }
-
-        // Updates the model's angular velocity relative to the player's velocity.
-        public void UpdateModelAngularVelocity()
-        {
-            // TODO: you usually don't manually change angular velocity, so find a better way to do this.
-            // The model body is not set.
-            if (modelBody == null)
-                return;
-
-            // Update the angular velocity.
-            Vector3 angular;
-            angular.x = physicsBody.velocity.z;
-            angular.y = physicsBody.velocity.y;
-            angular.z = -physicsBody.velocity.x;
-
-            modelBody.angularVelocity = angular;
         }
 
         // Call to have the camera track the player's y-position again.
@@ -551,19 +523,15 @@ namespace mbs
                         inputUnlockTimer = 0.0F;
 
                         // Turn gravity back on.
-                        physicsBody.useGravity = true;
+                        rigidbody.useGravity = true;
                     }
                         
                 }
             }
 
             // Clamps the velocity of the physics body.
-            if (physicsBody.velocity.magnitude > Mathf.Abs(maxVelocity))
-                physicsBody.velocity = Vector3.ClampMagnitude(physicsBody.velocity, maxVelocity);
-
-            // Updates the model's angular velocity.
-            if(autoUpdateModel)
-                UpdateModelAngularVelocity();
+            if (rigidbody.velocity.magnitude > Mathf.Abs(maxVelocity))
+                rigidbody.velocity = Vector3.ClampMagnitude(rigidbody.velocity, maxVelocity);
         }
 
         // This function is called when the MonoBehaviour will be destroyed.

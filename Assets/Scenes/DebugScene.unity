@@ -269,7 +269,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 324899794}
-  m_LocalRotation: {x: 0.30517742, y: -0.00000001638556, z: 0.0000000052509987, w: 0.95229554}
+  m_LocalRotation: {x: 0.30517742, y: 0.00000001638556, z: -0.0000000052509987, w: 0.95229554}
   m_LocalPosition: {x: 0, y: 6, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -980,7 +980,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.30517742, y: -0.00000001638556, z: 0.0000000052509987, w: 0.95229554}
+  m_LocalRotation: {x: 0.30517742, y: 0.00000001638556, z: -0.0000000052509987, w: 0.95229554}
   m_LocalPosition: {x: 0, y: 6, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3058,9 +3058,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loadStage: 0
+  stage: 
   player: {fileID: 0}
+  playerSpawn: {fileID: 0}
   activeVcam: {fileID: 0}
   goal: {fileID: 0}
+  goalSpawn: {fileID: 0}
   setCheckpoint: {fileID: 0}
   defaultAssets: {fileID: 0}
   deathPlaneY: -30
