@@ -12,7 +12,7 @@ namespace mbs
         private static TitleManager instance;
 
         // Used for initializing the singleton.
-        private bool initialized = false;
+        private bool instanced = false;
 
         // Constructor
         private TitleManager()
@@ -31,9 +31,9 @@ namespace mbs
 
 
             // Implement any Awake code here for initializing the singleton.
-            if(!initialized)
+            if(!instanced)
             {
-                initialized = true;
+                instanced = true;
             }
         }
 

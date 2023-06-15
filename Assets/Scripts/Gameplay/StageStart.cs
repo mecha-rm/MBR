@@ -11,11 +11,12 @@ namespace mbs
         // The stage loaded will be additive to the game scene.
         public string stageScene = "";
 
-        // Start is called before the first frame update
-        void Start()
-        {
-            // Don't destroy this object so that the GameScene can find it.
-            DontDestroyOnLoad(this);
-        }
+        // The program doesn't like you using DontDestroyOnLoad here, so do it elsewhere.
+        // // Start is called before the first frame update
+        // void Start()
+        // {
+        //     // Don't destroy this object so that the GameScene can find it.
+        //     DontDestroyOnLoad(gameObject);
+        // }
     }
 }

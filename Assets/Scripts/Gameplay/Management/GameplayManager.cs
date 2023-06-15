@@ -15,13 +15,24 @@ namespace mbs
         private static GameplayManager instance;
 
         // Used to initialize the singleton.
+        private bool instanced = false;
+
+        // Gets set to 'true' when the game has been initialized.
         private bool initialized = false;
+
+        // Delays game initialization by providing the amount of frame delays.
+        // NOTE: for SOME reason, objects only become detactable from the additive scene...
+        // from Update call 2 onwards. So I need to do this workaround to initialize the game properly.
+        private int initFrameDelay = 1;
 
         // The ground tag.
         public static string GROUND_TAG = "Ground";
 
         // Set to 'true' to load stage in Initialize() function.
         public bool loadStage = true;
+
+        // The stage being loaded.
+        public string stage = "";
 
         // The player for the game.
         public Player player;
@@ -75,9 +86,9 @@ namespace mbs
             }
 
             // Implement any Awake code here for initializing the singleton.
-            if (!initialized)
+            if (!instanced)
             {
-                initialized = true;
+                instanced = true;
             }
         }
 
@@ -96,30 +107,9 @@ namespace mbs
             if (activeVcam == null)
                 activeVcam = FindObjectOfType<CinemachineVirtualCamera>(false);
 
-            // Initializes the game.
-            Initialize();
-        }
 
-        // Returns the instance of the gameplay manager.
-        public static GameplayManager Instance
-        {
-            get
-            {
-                // Instance does not exist.
-                if (instance == null)
-                {
-                    GameObject manager = new GameObject("Gameplay Manager (singleton)");
-                    instance = manager.AddComponent<GameplayManager>();
-                }
-
-                // Return instance.
-                return instance;
-            }
-        }
-
-        // Initializes the gameplay manager.
-        private void Initialize()
-        {
+            // It appears that you can't get things properly if you loaded a scene on the same update where you're getting objects...
+            // So you moved this here.
             // Loads the stage.
             if (loadStage)
             {
@@ -142,62 +132,49 @@ namespace mbs
                 else
                 {
                     // Adds the provided scene to the current scene.
+                    stage = start.stageScene;
+
                     // TODO: load the scene asynchronously.
                     SceneManager.LoadScene(start.stageScene, LoadSceneMode.Additive);
 
+                    // Destroys the start scene.
+                    Destroy(start);
+
                     // Destoys all the default assets.
                     if (defaultAssets != null)
+                    {
                         Destroy(defaultAssets);
+                    }
+                        
                 }
             }
+        }
 
+        // Returns the instance of the gameplay manager.
+        public static GameplayManager Instance
+        {
+            get
+            {
+                // Instance does not exist.
+                if (instance == null)
+                {
+                    GameObject manager = new GameObject("Gameplay Manager (singleton)");
+                    instance = manager.AddComponent<GameplayManager>();
+                }
 
+                // Return instance.
+                return instance;
+            }
+        }
+
+        // Initializes the gameplay manager.
+        private void Initialize()
+        {
+            
             // Spawn Transforms
             // Finds the player and goal spawn.
             playerSpawn = FindObjectOfType<PlayerSpawn>(true);
             goalSpawn = FindObjectOfType<GoalSpawn>(true);
-
-            // TODO: for some reason, FindObjectOfType doesn't consider objects from the scene loaded additively.
-            // It doesn't work in the Update() either, meaning that this isn't an issue with calling it from Start().
-            // In order for this to work, I'm using FindGameObjectsWithTag, which does work for some reason.
-            // See if there's a better way to do this.
-
-            // If either of the spawns are set to null.
-            if(playerSpawn == null || goalSpawn == null)
-            {
-                // Grabs the spawns.
-                GameObject[] spawns = GameObject.FindGameObjectsWithTag("Spawn");
-
-                // Player spawn is set to null.
-                if (playerSpawn == null)
-                {
-                    // Tries to find the player spawn.
-                    foreach(GameObject spawn in spawns)
-                    {
-                        if (spawn.TryGetComponent(out playerSpawn))
-                            break;
-                    }
-                }
-
-                // Goal spawn is set to null.
-                if(goalSpawn == null)
-                {
-                    // Tries to find the goal spawn.
-                    foreach (GameObject spawn in spawns)
-                    {
-                        if (spawn.TryGetComponent(out goalSpawn))
-                            break;
-                    }
-                }
-                
-            }
-
-
-
-            if(goalSpawn == null)
-            {
-
-            }
 
             // Player spawn found.
             if (playerSpawn != null)
@@ -217,6 +194,9 @@ namespace mbs
             }
 
             // ... Do more.
+
+            // The game has been initialized.
+            initialized = true;
         }
 
         // Switches over to the provided camera.
@@ -274,6 +254,30 @@ namespace mbs
         // Update is called once per frame
         void Update()
         {
+            PlayerSpawn ps = FindObjectOfType<PlayerSpawn>(true);
+            GameObject[] spawns = GameObject.FindGameObjectsWithTag("Spawn");
+
+            // Initializes the game.
+            if (!initialized)
+            {
+                // Reduce the init frame delay.
+                if (initFrameDelay > 0)
+                {
+                    initFrameDelay--;
+
+                    // Negative, so set to 0.
+                    if (initFrameDelay < 0)
+                        initFrameDelay = 0;
+                }
+                else
+                {
+                    // The frame delay is 0, so now initialize the game.
+                    initFrameDelay = 0;
+                    Initialize();
+                }
+            }
+                
+
             // Increases the timer.
             if(!pausedTimer)
             {
