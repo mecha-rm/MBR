@@ -33,6 +33,8 @@ namespace mbs
         // The destination of the one-way portal.
         public Vector3 destination;
 
+        // TODO: have object option.
+
         [Header("End Portal")]
         // The destination portal.
         public Portal endPortal;
@@ -174,6 +176,8 @@ namespace mbs
                 // Tries to get the component.
                 if(entity.TryGetComponent(out rigidbody))
                 {
+                    // FIXME: for some reason, this doesn't appear to be work for the player.
+                    // Fix.
                     rigidbody.velocity = Vector3.zero;
                 }
             }

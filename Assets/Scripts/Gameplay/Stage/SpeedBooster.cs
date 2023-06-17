@@ -45,6 +45,25 @@ namespace mbs
                 gameManager = GameplayManager.Instance;
         }
 
+        // TODO: optimize this.
+
+        // OnCollisionEnter - TODO: not working? Fix this.
+        private void OnCollisionEnter(Collision collision)
+        {
+            // Checks the tag to know that it's a player.
+            if (collision.gameObject.tag == Player.PLAYER_TAG)
+            {
+                Player player;
+
+                // Gets the player component.
+                if (collision.gameObject.TryGetComponent(out player))
+                {
+                    // Applies the speed boost to the player.
+                    ApplySpeedBoost(player);
+                }
+            }
+        }
+
         // OnTriggerEnter is called when the Collider other enters the trigger.
         private void OnTriggerEnter(Collider other)
         {
