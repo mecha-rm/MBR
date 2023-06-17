@@ -112,12 +112,15 @@ namespace mbs
             }
             else // Not in list, so add it.
             {
+                // TODO: for some reason, rotating causes the scale of the object to screw up when its parented.
+                // You need to fix that.
+
                 // Creates the passenger object and gives it values.
                 Passenger passenger = new Passenger();
                 passenger.gameObject = entity;
                 passenger.originalParent = entity.transform.parent;
 
-                // Make parent of platform.
+                // Make parent of platform (scale is adjusted due to a glitch).
                 passenger.gameObject.transform.parent = transform;
 
                 // Adds thep passenger to the list.
@@ -137,7 +140,10 @@ namespace mbs
             {
                 // Give original parent.
                 if(passengers[index].gameObject != null)
+                {
                     passengers[index].gameObject.transform.parent = passengers[index].originalParent;
+                }
+                    
 
                 // Remove the elemnent.
                 passengers.RemoveAt(index);
