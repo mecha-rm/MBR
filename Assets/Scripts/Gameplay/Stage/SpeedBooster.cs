@@ -45,40 +45,37 @@ namespace mbs
                 gameManager = GameplayManager.Instance;
         }
 
-        // TODO: optimize this.
 
-        // OnCollisionEnter - TODO: not working? Fix this.
+        // OnCollisionEnter is called when this collider/rigidbody has begun touching another rigidbody/collider
         private void OnCollisionEnter(Collision collision)
         {
-            // Checks the tag to know that it's a player.
-            if (collision.gameObject.tag == Player.PLAYER_TAG)
-            {
-                Player player;
-
-                // Gets the player component.
-                if (collision.gameObject.TryGetComponent(out player))
-                {
-                    // Applies the speed boost to the player.
-                    ApplySpeedBoost(player);
-                }
-            }
+            TryApplySpeedBoost(collision.gameObject);
         }
 
         // OnTriggerEnter is called when the Collider other enters the trigger.
         private void OnTriggerEnter(Collider other)
         {
+            TryApplySpeedBoost(other.gameObject);
+        }
+
+        // Tries to apply a speed boost.
+        public bool TryApplySpeedBoost(GameObject entity)
+        {
             // Checks the tag to know that it's a player.
-            if(other.gameObject.tag == Player.PLAYER_TAG)
+            if (entity.gameObject.tag == Player.PLAYER_TAG)
             {
                 Player player;
 
                 // Gets the player component.
-                if(other.gameObject.TryGetComponent(out player))
+                if (entity.gameObject.TryGetComponent(out player))
                 {
                     // Applies the speed boost to the player.
                     ApplySpeedBoost(player);
+                    return true;
                 }
             }
+
+            return false;
         }
 
         // Applies force to the provided player's rigid body.

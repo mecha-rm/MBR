@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7077975430957488540}
   m_Layer: 0
   m_Name: Speed Panel
-  m_TagString: Untagged
+  m_TagString: Booster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -42,7 +42,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7077975430957488538}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 8.5, y: 0.15, z: 8.5}
@@ -60,14 +60,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 0}
-  power: 10
+  power: 20
   fixedVelocity: 1
   useSpeedBoostForward: 1
   setPlayerPos: 0
   posOffset: {x: 0, y: 0, z: 0}
-  lockPlayerControls: 0
+  lockPlayerControls: 1
   disableGravity: 0
-  lockTime: 0.85
+  lockTime: 0.2
 --- !u!1001 &7077975429830989697
 PrefabInstance:
   m_ObjectHideFlags: 0

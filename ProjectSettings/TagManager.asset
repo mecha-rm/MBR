@@ -10,6 +10,7 @@ TagManager:
   - Checkpoint
   - Portal
   - Spawn
+  - Booster
   layers:
   - Default
   - TransparentFX

@@ -16,31 +16,33 @@ namespace mbs
         // The list of valid tags for the portal.
         public List<string> tags = new List<string>();
 
-        // Determines if an end portal is used or not.
-        public bool useEndPortal = true;
-
-        // The destination virtual camera. The switch only happens if the teleported entity...
-        // is a Player
-        // If this is null, then the camera stays the same.
-        public CinemachineVirtualCamera destVcam;
-
         // TODO: set variable for facing camera direction.
 
         // If 'true', the portal stops the velocity of the entity's rigidbody if they have one.
         public bool stopVelocity = true;
 
-        [Header("One-Way")]
-        // The destination of the one-way portal.
+        [Header("Destination")]
+
+        // Determines if an end portal is used or not.
+        public bool useEndPoint = true;
+
+        // The destination position. If 'useEndPoint' is false, endPoint is used instead of the set destination.
+        // This is used if no endpoint is set.
+        [Tooltip("The destination position. This is used if 'useEndPoint' is false.")]
         public Vector3 destination;
 
-        // TODO: have object option.
+        // The end point.
+        [Tooltip("The destination end point.")]
+        public GameObject endPoint;
 
-        [Header("End Portal")]
-        // The destination portal.
-        public Portal endPortal;
+        // The offset from the end point.
+        [Tooltip("The offset from the endpoint.")]
+        public Vector3 endPointOffset;
 
-        // Offset from the portal's position.
-        public Vector3 portalOffset;
+        // The destination virtual camera. The switch only happens if the teleported entity is a player.
+        // If this is null, then the camera stays the same.
+        [Tooltip("The destination point's camera. If this is null, the camera isn't changed.")]
+        public CinemachineVirtualCamera destVcam;
 
         // Start is called before the first frame update
         void Start()
@@ -130,10 +132,10 @@ namespace mbs
             // The position to be returned.
             Vector3 returnPos;
 
-            // Checks if an end portal should be used as the end position.
-            if(useEndPortal && endPortal != null)
+            // Checks if an end point should be used as the end position.
+            if(useEndPoint && endPoint != null)
             {
-                returnPos = endPortal.transform.position + portalOffset;
+                returnPos = endPoint.transform.position + endPointOffset;
             }
             else
             {
@@ -167,24 +169,22 @@ namespace mbs
                 }
             }
 
+            // Move the entity to the destination position.
+            entity.transform.position = dest;
 
             // Checks of the entity's velocity should be stopped.
-            if(stopVelocity)
+            if (stopVelocity)
             {
                 Rigidbody rigidbody;
 
                 // Tries to get the component.
-                if(entity.TryGetComponent(out rigidbody))
+                if (entity.TryGetComponent(out rigidbody))
                 {
                     // FIXME: for some reason, this doesn't appear to be work for the player.
                     // Fix.
                     rigidbody.velocity = Vector3.zero;
                 }
             }
-
-
-            // Move the entity to the destination position.
-            entity.transform.position = dest;
         }
 
     }
