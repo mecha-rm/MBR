@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // This object is created to provide information on how to start a stage. 
     public class StageStart : MonoBehaviour

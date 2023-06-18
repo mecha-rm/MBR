@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // A script for the camera that follows the player.
     public class FollowerCamera : MonoBehaviour

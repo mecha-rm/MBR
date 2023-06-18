@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // Activates objects upon the object being triggred.
     public class ObjectActivator : MonoBehaviour

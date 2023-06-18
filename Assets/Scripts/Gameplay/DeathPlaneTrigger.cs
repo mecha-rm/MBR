@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace mbs
+namespace mbr
 {
     // Attach this to an object if you want it to be effected by the death plane.
     public class DeathPlaneTrigger : MonoBehaviour

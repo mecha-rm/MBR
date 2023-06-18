@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // Custom math operations used at various portions of the game. 
     public class CustomMath

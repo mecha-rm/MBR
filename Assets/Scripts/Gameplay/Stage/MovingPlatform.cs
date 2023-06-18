@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // NOTE: make sure the object with the platform script has a scale of (1, 1, 1), otherwise it will screw up...
     // The scale of the passangers.

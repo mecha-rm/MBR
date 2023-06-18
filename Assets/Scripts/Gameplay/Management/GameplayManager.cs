@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace mbs
+namespace mbr
 {
     // The manager for gameplay operations.
     public class GameplayManager : MonoBehaviour
@@ -151,6 +151,7 @@ namespace mbs
                     if (defaultAssets != null)
                     {
                         Destroy(defaultAssets);
+                        defaultAssets = null;
                     }
                         
                 }
@@ -206,9 +207,14 @@ namespace mbs
 
             // ... Do more.
 
+            // Sets to the active virtual camera.
+            SetToActiveVirtualCamera(false);
+
             // The game has been initialized.
             initialized = true;
         }
+
+
 
         // Switches over to the provided camera.
         public void SetVirtualCamera(CinemachineVirtualCamera newVcam)
@@ -223,6 +229,31 @@ namespace mbs
             // Save the new virtual camera.
             activeVcam = newVcam;
         }
+
+        // Finds and sets the active virtual camera.
+        // overrideIfAlreadySet: if the vcam is set, override it with the found vcam. 
+        public void SetToActiveVirtualCamera(bool overrideIfAlreadySet)
+        {
+            // The camera has been set, but the game should search anyway.
+            if (activeVcam != null && overrideIfAlreadySet)
+            {
+                activeVcam = null;
+            }
+            // The camera is set, and it shouldn't be overwritten, so don't do anything.
+            else if (activeVcam != null && !overrideIfAlreadySet)
+            {
+                return;
+            }
+
+            // Finds the active vcam.
+            CinemachineVirtualCamera vcam = FindObjectOfType<CinemachineVirtualCamera>();
+
+            // Camera found.
+            if (vcam != null)
+                SetVirtualCamera(vcam);
+        }
+
+
 
         // Called when an object has reached the death plane.
         public void OnDeathPlaneReached(GameObject entity)

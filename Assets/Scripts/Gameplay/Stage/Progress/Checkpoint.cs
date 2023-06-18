@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // A checkpoint for respawning the player. Make sure the player has the Player tag so that it can be activated.
     public class Checkpoint : MonoBehaviour
@@ -13,6 +13,10 @@ namespace mbs
 
         // The camera set for this checkpoint.
         public CinemachineVirtualCamera vcam;
+
+        // If 'true', the vcam is automatically set to the current one if it's null.
+        [Tooltip("Sets the vcam to the current vcam upon being activated, if this is null.")]
+        public bool autoSetVcam = true;
 
         // The movement mode of the player when they hit the checkpoint.
         private Player.MovementMode playerMode;
@@ -58,6 +62,12 @@ namespace mbs
             activated = true;
             gm.setCheckpoint = this;
             playerMode = gm.player.GetMovementMode();
+
+            // Gets the active vcam.
+            if(autoSetVcam && vcam == null)
+            {
+                vcam = gm.activeVcam;
+            }
         }
 
         // Gets the respawn position.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-namespace mbs
+namespace mbr
 {
     // The gameplay hud.
     public class GameplayHud : MonoBehaviour

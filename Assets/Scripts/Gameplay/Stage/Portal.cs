@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // A portal that takes the valid tags to another location.
     public class Portal : MonoBehaviour

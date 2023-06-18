@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // A waypoint on the rail.
     public class RailWaypoint : MonoBehaviour

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // The stage virtual camera.
     public class StageVirtualCamera : MonoBehaviour

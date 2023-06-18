@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // Acts as a collision point for a rail.
     public class RailSegment : MonoBehaviour

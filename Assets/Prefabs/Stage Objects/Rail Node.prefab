@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5686679505820014098}
   - component: {fileID: 5686679505820014109}
+  - component: {fileID: 332105664032082915}
   - component: {fileID: 5686679505820014108}
   m_Layer: 0
   m_Name: Rail Node
@@ -47,6 +48,19 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 2
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &332105664032082915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5686679505820014099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d992945a269b41c44ade980588bf2fc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rail: {fileID: 0}
 --- !u!114 &5686679505820014108
 MonoBehaviour:
   m_ObjectHideFlags: 0

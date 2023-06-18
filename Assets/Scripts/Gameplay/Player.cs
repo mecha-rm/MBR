@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // The script for the player.
     public class Player : MonoBehaviour
@@ -255,6 +255,18 @@ namespace mbs
             }
         }
 
+        // Checks if the player can move. This is seperate from the jump parameter.
+        public bool CanMove()
+        {
+            bool result;
+
+            // Checks if the player is attached to the rail.
+            // The player can't move if they're attached to the rail.
+            result = !railRider.IsAttachedToRail();
+
+            return result;
+        }
+
 
         // Called when attaching to a rail.
         private void OnAttachToRail(Rail rail, RailRider rider)
@@ -270,9 +282,14 @@ namespace mbs
         }
 
         // Called when changing positions on a rail.
-        private void OnRailPositionUpdated(Vector3 oldPos, Vector3 newPos)
+        private void OnRailPositionUpdated(Rail rail, RailRider rider, Vector3 oldPos, Vector3 newPos)
         {
-            // ...
+            // Checks if the rider can freely detach from the rail.
+            if (rail.allowFreeDetach)
+            {
+                // The player can jump f they're on the rail.
+                canJump = true;
+            }
         }
 
 
@@ -284,6 +301,9 @@ namespace mbs
             // The horizontal and vertical.
             float hori = Input.GetAxisRaw("Horizontal");
             float vert = Input.GetAxisRaw("Vertical");
+
+            // Checks if the player can move.
+            // bool canMove = CanMove();
 
             // Need to set it up this way for GetKeyDown for jumping.
             // float jump = Input.GetAxisRaw("Jump"); // Old
@@ -429,7 +449,7 @@ namespace mbs
                 if (jump != 0.0F)
                 {
                     // Detaches the rider from the rail if it's attached to it.
-                    if (railRider.IsRiderAttachedToRail())
+                    if (railRider.IsAttachedToRail())
                         railRider.DetachFromRail();
 
                         // Saves the player's position when they jumped.

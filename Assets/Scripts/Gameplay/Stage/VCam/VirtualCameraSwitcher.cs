@@ -4,7 +4,7 @@ using UnityEngine;
 using Cinemachine;
 
 // The virtual camera switcher.
-namespace mbs
+namespace mbr
 {
     public class VirtualCameraSwitcher : MonoBehaviour
     {
@@ -32,6 +32,8 @@ namespace mbs
 
         // Applies settings to the game when the cameras are switched.
         public bool applySettings = true;
+
+        // TODO: maybe apply the move mode and the rotation mode to the camera.
 
         [Header("Settings/Movement Mode")]
 

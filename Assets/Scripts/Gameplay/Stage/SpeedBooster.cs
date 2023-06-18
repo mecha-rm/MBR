@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // Boosts the player in a given direction.
     public class SpeedBooster : MonoBehaviour

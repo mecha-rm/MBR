@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 
-namespace mbs
+namespace mbr
 {
     // Translates an object between several points.
     public abstract class Translation : MonoBehaviour

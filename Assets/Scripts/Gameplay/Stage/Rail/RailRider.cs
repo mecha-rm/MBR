@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // A script that's used to attach a rail rider to a rail.
 
@@ -35,7 +35,7 @@ namespace mbs
         private RailRiderCallback detachedCallback;
 
         // OnPositionUpdated callback.
-        public delegate void RailPositionCallback(Vector3 oldPos, Vector3 newPos);
+        public delegate void RailPositionCallback(Rail rail, RailRider rider, Vector3 oldPos, Vector3 newPos);
 
         // The position callback.
         private RailPositionCallback positionCallback;
@@ -135,7 +135,7 @@ namespace mbs
         }
 
         // Checks if a rider is attached to their set rail.
-        public bool IsRiderAttachedToRail()
+        public bool IsAttachedToRail()
         {
             // Checks if the rail is set.
             if(rail == null)
@@ -167,13 +167,13 @@ namespace mbs
         {
             // Old position, new position.
             if (positionCallback != null)
-                positionCallback(oldPos, newPos);
+                positionCallback(rail, this, oldPos, newPos);
         }
 
-        // Update is called once per frame
-        void Update()
-        {
+        //// Update is called once per frame
+        //void Update()
+        //{
 
-        }
+        //}
     }
 }

@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Net;
 using UnityEngine;
-using static UnityEngine.ParticleSystem;
 
-namespace mbs
+namespace mbr
 {
     // A rail that's used to transport the player.
     public class Rail : MonoBehaviour
@@ -24,8 +23,17 @@ namespace mbs
         // The points on the rail that is used to transport the player.
         public List<RailWaypoint> waypoints = new List<RailWaypoint>();
 
+        // If 'true', waypoints in the children are automatically added. Only happens if the waypoint list is empty.
+        [Tooltip("Adds the waypoints that are children of the rail object automatically if true. This only happens if the list is empty.")]
+        public bool autoAddWaypoints = true;
+
         // The objects attached to this rail.
         public List<RailRider> riders = new List<RailRider>();
+
+        // If 'true', the riders can freely detach from the rail.
+        public bool allowFreeDetach = true;
+
+        [Header("Movement")]
 
         // The movement mode of the rail.
         [Tooltip("The movement mode of the rail.")]
@@ -51,7 +59,15 @@ namespace mbs
         // Start is called before the first frame update
         void Start()
         {
-
+            // Automatically adds the waypoints.
+            if(autoAddWaypoints)
+            {
+                // Adds the waypoints in the children.
+                if (waypoints.Count == 0)
+                {
+                    GetComponentsInChildren<RailWaypoint>(true, waypoints);
+                }
+            }
         }
 
         // OnCollisionEnter is called when a collider/rigidbody has begun touching another collider/rigidbody.

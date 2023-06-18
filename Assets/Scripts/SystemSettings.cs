@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // The settings for the game (e.g., audio).
     public class SystemSettings : MonoBehaviour

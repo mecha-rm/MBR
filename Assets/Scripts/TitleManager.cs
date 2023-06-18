@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace mbs
+namespace mbr
 {
     // The manager for the title screen of the game.
     public class TitleManager : MonoBehaviour

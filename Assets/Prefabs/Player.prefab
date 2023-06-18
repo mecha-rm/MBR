@@ -84,7 +84,7 @@ MonoBehaviour:
   maxVelocity: 1000
   inputsEnabled: 1
   jumpKey: 32
-  jumpPower: 10
+  jumpPower: 12
   dashKey: 104
   dashPower: 10
   dashCooldownTimer: 0

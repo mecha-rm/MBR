@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace mbs
+namespace mbr
 {
     // Moves platform with vectors as waypoints.
     public class MovingPlatformWithVectors : MovingPlatform
