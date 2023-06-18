@@ -278,7 +278,22 @@ namespace mbr
         // Called when detaching from a rail.
         private void OnDetachFromRail(Rail rail, RailRider rider)
         {
-            // ...
+            // Checks the movement mode.
+            switch(moveMode)
+            {
+                case MovementMode.xy2dWorld:
+                case MovementMode.xy2dCam:
+                case MovementMode.zy2dWorld:
+                case MovementMode.zy2dCam:
+
+                    // Removes the rotation velocity for the y-rotation.
+                    // This is done so that the object isn't rotating perpetually.
+                    Vector3 angular = rigidbody.angularVelocity;
+                    angular.y = 0.0F;
+
+                    rigidbody.angularVelocity = angular;
+                    break;
+            }
         }
 
         // Called when changing positions on a rail.
