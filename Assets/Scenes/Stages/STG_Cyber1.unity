@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -366,6 +366,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1771667642492466684, guid: d502eeb71a83aa14f830e9ec466d7913, type: 3}
+      propertyPath: endPoint
+      value: 
+      objectReference: {fileID: 678196388}
     - target: {fileID: 1771667642492466685, guid: d502eeb71a83aa14f830e9ec466d7913, type: 3}
       propertyPath: m_Name
       value: Portal
@@ -737,7 +741,7 @@ MonoBehaviour:
   riders: []
   allowFreeDetach: 1
   mode: 0
-  speed: 10
+  speed: 15
   samples: 11
   launchPower: 1
   loopRail: 0
@@ -768,7 +772,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 304892440}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6, y: 6, z: 150}
+  m_LocalPosition: {x: 6, y: 4, z: 150}
   m_LocalScale: {x: 20, y: 12, z: 16}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1485,7 +1489,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 678196388}
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -245, y: 30, z: 190}
+  m_LocalPosition: {x: -245, y: 25, z: 190}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1637,13 +1641,6 @@ MonoBehaviour:
   switchOnExit: 0
   setActive: 1
   tags: []
-  applySettings: 1
-  applyMoveMode: 1
-  vcam1MoveMode: 6
-  vcam2MoveMode: 0
-  applyRotation: 1
-  vcam1CamTargetRot: {x: 0, y: 0, z: 0, w: 1}
-  vcam2CamTargetRot: {x: 0, y: 0, z: 0, w: 1}
 --- !u!65 &866550192
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1894,7 +1891,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 10, y: 1, z: 0}
+  m_FollowOffset: {x: 12, y: 2, z: 0}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -1990,6 +1987,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vcam: {fileID: 1030138032}
+  applySettings: 1
+  applyMoveMode: 1
+  moveMode: 1
+  applyRotation: 1
+  targetRot: {x: 0, y: -0.70710677, z: 0, w: 0.70710677}
   target: {fileID: 571173737}
   targetParent: {fileID: 0}
   childToTransformCopy: 1
@@ -2474,13 +2476,6 @@ MonoBehaviour:
   switchOnExit: 0
   setActive: 1
   tags: []
-  applySettings: 1
-  applyMoveMode: 1
-  vcam1MoveMode: 6
-  vcam2MoveMode: 1
-  applyRotation: 1
-  vcam1CamTargetRot: {x: 0, y: 0, z: 0, w: 1}
-  vcam2CamTargetRot: {x: 0, y: 0, z: 0, w: 1}
 --- !u!65 &1374982302
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2580,6 +2575,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vcam: {fileID: 1439608019}
+  applySettings: 1
+  applyMoveMode: 1
+  moveMode: 0
+  applyRotation: 1
+  targetRot: {x: 0, y: 0, z: 0, w: 1}
   target: {fileID: 70788515}
   targetParent: {fileID: 0}
   childToTransformCopy: 1
@@ -2609,7 +2609,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1462675429}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 6, z: 30}
+  m_LocalPosition: {x: -280, y: 22, z: 185}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2655,7 +2655,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1485020749}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6, y: 3, z: 125}
+  m_LocalPosition: {x: 6, y: 2, z: 125}
   m_LocalScale: {x: 20, y: 12, z: 16}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3029,7 +3029,7 @@ MonoBehaviour:
   riders: []
   allowFreeDetach: 1
   mode: 0
-  speed: 10
+  speed: 15
   samples: 11
   launchPower: 1
   loopRail: 0
@@ -3080,7 +3080,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 10, y: 6, z: 0}
+  m_FollowOffset: {x: 0, y: 6, z: -10}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -3435,7 +3435,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 79661190864364140, guid: 48e620682887c624e911080de6b28b35, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 15
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 79661190864364140, guid: 48e620682887c624e911080de6b28b35, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3528,6 +3528,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vcam: {fileID: 2040337234}
+  applySettings: 1
+  applyMoveMode: 1
+  moveMode: 5
+  applyRotation: 1
+  targetRot: {x: 0, y: 0, z: 0, w: 1}
   target: {fileID: 1319692381}
   targetParent: {fileID: 0}
   childToTransformCopy: 1

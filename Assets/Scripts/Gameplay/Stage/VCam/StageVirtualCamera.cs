@@ -11,6 +11,23 @@ namespace mbr
         // The cinemachine virtual camera.
         public CinemachineVirtualCamera vcam;
 
+        [Header("Settings")]
+
+        // Applies the camera settings upon it being activated.
+        [Tooltip("Applies the settings when the camera is activated.")]
+        public bool applySettings = true;
+
+        // Applies the movement mode of this camera.
+        public bool applyMoveMode = true;
+
+        // The movement mode of the virtual camera.
+        public Player.MovementMode moveMode;
+
+        // Applies the target's rotation.
+        public bool applyRotation = true;
+
+        // The rotation of the player's camera.
+        public Quaternion targetRot = Quaternion.identity;
 
         [Header("Target")]
         // The target for the virtual camera.
@@ -81,6 +98,11 @@ namespace mbr
             // Set the local position to zero, then apply the target offset.
             target.localPosition = Vector3.zero;
             target.localPosition = targetPosOffset;
+
+
+            // Apply the camera settings.
+            if(applySettings)
+                ApplyCameraSettings();
         }
 
         // Called when the camera is deactivated.
@@ -92,6 +114,25 @@ namespace mbr
 
             // Set the target back to its base parent.
             target.transform.parent = targetParent;
+        }
+
+        // Applies the camera settings.
+        public void ApplyCameraSettings()
+        {
+            // Apply Camera Settings
+            Player player = GameplayManager.Instance.player;
+
+            // Set the movement mode.
+            if (applyMoveMode) // Movement mode.
+            {
+                player.SetMovementMode(moveMode);
+            }
+
+            // Set the rotation.
+            if (applyRotation) // Rotation.
+            {
+                player.cameraTarget.transform.rotation = targetRot;
+            }
         }
     }
 }
