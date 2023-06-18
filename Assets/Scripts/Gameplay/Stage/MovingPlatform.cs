@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace mbs
 {
+    // NOTE: make sure the object with the platform script has a scale of (1, 1, 1), otherwise it will screw up...
+    // The scale of the passangers.
+
     // Moves a platform in a given direction.
     public abstract class MovingPlatform : MonoBehaviour
     {
@@ -17,6 +19,9 @@ namespace mbs
             // The original parent of the game object.
             public Transform originalParent;
         }
+
+        // The collider for the moving platform.
+        public new Collider collider;
 
         // The list of passengers on the moving platform.
         protected List<Passenger> passengers = new List<Passenger>();
@@ -37,9 +42,11 @@ namespace mbs
         public bool paused = false;
 
         // Start is called before the first frame update
-        void Start()
+        protected virtual void Start()
         {
-
+            // Grabs the collider if it's not set.
+            if (collider == null)
+                collider = GetComponent<Collider>();
         }
 
         // OnCollisionEnter is called when this collider/rigidbody has begun touching another rigidbody/collider.

@@ -128,8 +128,28 @@ namespace mbs
             SetMovementMode(moveMode);
         }
 
-        // OnCollisionEnter is called when a collider/rigidbody has begun touching another collider/rigidbody.
-        private void OnCollisionEnter(Collision collision)
+        //// OnCollisionEnter is called when a collider/rigidbody has begun touching another collider/rigidbody.
+        //private void OnCollisionEnter(Collision collision)
+        //{
+        //    // // If it's a rail object.
+        //    // if (collision.gameObject.tag == Rail.RAIL_TAG)
+        //    // {
+        //    //     OnAttachToRail();
+        //    // }
+
+        //    // If it's a ground object. (TODO: check contact point so that the player is standing on the platform).
+        //    // This is used in 'Enter' so that it doesn't hinder the player's jump.
+        //    if (collision.gameObject.tag == GameplayManager.GROUND_TAG)
+        //    {
+        //        canJump = true;
+        //        SetCameraTrackPlayerY(true);
+        //    }
+        //}
+
+        // TODO: account for hitting the side of a ground object. Have other non-tagged collider.
+
+        // OnCollisionStay is called once per frame for every collider/rigidbody that is touching this rigidbody/collider.
+        private void OnCollisionStay(Collision collision)
         {
             // // If it's a rail object.
             // if (collision.gameObject.tag == Rail.RAIL_TAG)
@@ -145,22 +165,6 @@ namespace mbs
                 SetCameraTrackPlayerY(true);
             }
         }
-
-        // // OnCollisionStay is called once per frame for every collider/rigidbody that is touching this rigidbody/collider.
-        // private void OnCollisionStay(Collision collision)
-        // {
-        //     // TODO: check tag to see if object should effect player's movement direction.
-        // 
-        //     // // Gets the up direction of the collision.
-        //     // playerUp = collision.transform.up;
-        // 
-        //     // If it's a ground object. (TODO: check contact point so that the player is standing on the platform).
-        //     if (collision.gameObject.tag == GameplayManager.GROUND_TAG)
-        //     {
-        //         canJump = true;
-        //         EnableCameraTrackPlayerY();
-        //     }
-        // }
 
         // OnCollisionExit is called when this collider/rigidbody has stopped touching another rigidbody/collider.
         private void OnCollisionExit(Collision collision)
