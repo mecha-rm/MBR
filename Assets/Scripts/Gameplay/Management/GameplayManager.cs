@@ -28,11 +28,24 @@ namespace mbs
         // The ground tag.
         public static string GROUND_TAG = "Ground";
 
+        // A parent object that contains all the debug assets. If a level is loaded successfully, the object is deleted.
+        public GameObject defaultAssets;
+
+        [Header("Stage")]
+
+        // The game stage.
+        public Stage stage = null;
+
+        // The stage being loaded.
+        public string stageScene = "";
+
         // Set to 'true' to load stage in Initialize() function.
         public bool loadStage = true;
 
-        // The stage being loaded.
-        public string stage = "";
+        // The y-value of the death plane. Anything below this plane is considered 'dead', and thus will be destroyed.
+        public float deathPlaneY = -30.0F;
+
+        [Header("Player")]
 
         // The player for the game.
         public Player player;
@@ -55,12 +68,6 @@ namespace mbs
         public Checkpoint setCheckpoint = null;
 
         // TODO: implement checkpoint and make sure to give it the respawn camera.
-
-        // A parent object that contains all the debug assets. If a level is loaded successfully, the object is deleted.
-        public GameObject defaultAssets;
-
-        // The y-value of the death plane. Anything below this plane is considered 'dead', and thus will be destroyed.
-        public float deathPlaneY = -30.0F;
 
         [Header("Timer")]
 
@@ -132,7 +139,7 @@ namespace mbs
                 else
                 {
                     // Adds the provided scene to the current scene.
-                    stage = start.stageScene;
+                    stageScene = start.stageScene;
 
                     // TODO: load the scene asynchronously.
                     SceneManager.LoadScene(start.stageScene, LoadSceneMode.Additive);
@@ -170,7 +177,11 @@ namespace mbs
         // Initializes the gameplay manager.
         private void Initialize()
         {
-            
+            // Stage Info
+            if(stage == null)
+                stage = FindObjectOfType<Stage>(true);
+
+
             // Spawn Transforms
             // Finds the player and goal spawn.
             playerSpawn = FindObjectOfType<PlayerSpawn>(true);

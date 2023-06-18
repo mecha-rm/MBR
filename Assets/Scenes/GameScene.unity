@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -223,6 +223,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2534098489936558527, guid: 9554ca5fbec140b4999023341cc6c1d4, type: 3}
   m_PrefabInstance: {fileID: 691497259}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &102005286 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2534098489936558526, guid: 9554ca5fbec140b4999023341cc6c1d4, type: 3}
+  m_PrefabInstance: {fileID: 691497259}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 102005283}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fdc634c3eba70b4181c72a943f1772c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &441702551
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,16 +578,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c57814ba11fd1994f870e9b7ad65ecfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defaultAssets: {fileID: 1955666071}
+  stage: {fileID: 0}
+  stageScene: 
   loadStage: 1
-  stage: 
-  player: {fileID: 0}
+  deathPlaneY: -30
+  player: {fileID: 102005286}
   playerSpawn: {fileID: 0}
   activeVcam: {fileID: 0}
   goal: {fileID: 441702552}
   goalSpawn: {fileID: 0}
   setCheckpoint: {fileID: 0}
-  defaultAssets: {fileID: 1955666071}
-  deathPlaneY: -30
   timer: 0
   pausedTimer: 0
 --- !u!1 &1374023473
@@ -623,7 +635,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b76b2e0edaada3f4cb911bdc60f7b1c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageScene: STG_Castle1
+  stageScene: STG_Cyber1
 --- !u!1 &1762676382
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,6 +647,7 @@ GameObject:
   - component: {fileID: 1762676385}
   - component: {fileID: 1762676384}
   - component: {fileID: 1762676383}
+  - component: {fileID: 1762676386}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -708,6 +721,40 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1762676386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1762676382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShowDebugText: 0
+  m_ShowCameraFrustum: 1
+  m_IgnoreTimeScale: 0
+  m_WorldUpOverride: {fileID: 0}
+  m_UpdateMethod: 2
+  m_BlendUpdateMethod: 1
+  m_DefaultBlend:
+    m_Style: 1
+    m_Time: 2
+    m_CustomCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_CustomBlends: {fileID: 0}
+  m_CameraCutEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_CameraActivatedEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1955666071
 GameObject:
   m_ObjectHideFlags: 0

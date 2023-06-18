@@ -136,7 +136,6 @@ namespace mbs
         //    // {
         //    //     OnAttachToRail();
         //    // }
-
         //    // If it's a ground object. (TODO: check contact point so that the player is standing on the platform).
         //    // This is used in 'Enter' so that it doesn't hinder the player's jump.
         //    if (collision.gameObject.tag == GameplayManager.GROUND_TAG)
